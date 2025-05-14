@@ -1,0 +1,48 @@
+/* Sidebar */
+.sb-sidenav {
+    background-color: #2c3e50;
+}
+
+.sb-sidenav .sb-sidenav-menu .nav-link {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.sb-sidenav .sb-sidenav-menu .nav-link:hover {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sb-sidenav .sb-sidenav-menu .nav-link .sb-nav-link-icon {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Cartes */
+.card {
+    border: none;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    transition: all 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1.5rem 0 rgba(58, 59, 69, 0.2);
+}
+
+/* Tableaux */
+.table thead th {
+    border-bottom-width: 1px;
+    font-weight: 600;
+}
+
+/* Boutons */
+.btn {
+    border-radius: 0.35rem;
+    font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1rem;
+    }
+}
