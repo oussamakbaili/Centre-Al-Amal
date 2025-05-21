@@ -19,10 +19,17 @@ class EmploiDuTempsController extends Controller
 
     public function create()
     {
-        $enseignants = Enseignant::with('modules')->orderBy('nom')->get();
-        \Log::info('Tous les enseignants:', $enseignants->toArray());
+        // Get all teachers with their single module
+        $enseignants = Enseignant::with('module')->get();
+
+        // Filter out teachers without a module
+        $enseignants = $enseignants->filter(function($enseignant) {
+            return $enseignant->module !== null;
+        });
+
         return view('admin.emplois.create', compact('enseignants'));
     }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -35,8 +42,8 @@ class EmploiDuTempsController extends Controller
                 'required',
                 'exists:modules,id',
                 function ($attribute, $value, $fail) use ($request) {
-                    $enseignant = Enseignant::with('modules')->find($request->enseignant_id);
-                    if (!$enseignant->modules->contains($value)) {
+                    $enseignant = Enseignant::with('module')->find($request->enseignant_id);
+                    if ($enseignant->module_id != $value) {
                         $fail("Le module sélectionné n'est pas attribué à cet enseignant");
                     }
                 }
@@ -45,9 +52,10 @@ class EmploiDuTempsController extends Controller
 
         EmploiDuTemps::create($validated);
 
-        return redirect()->route('admin.emplois.index')->with('success', 'Emploi du temps ajouté avec succès.');
+        return redirect()->route('admin.emplois.index')
+            ->with('success', 'Emploi du temps ajouté avec succès.');
     }
-    public function show(EmploiDuTemps $emploi)
+        public function show(EmploiDuTemps $emploi)
     {
         return view('admin.emplois.show', compact('emploi'));
     }

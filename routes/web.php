@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\SuperAdmin\DashboardController as SuperAdminDashboardController;
 use App\Http\Controllers\SuperAdmin\ProfileController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\PreinscriptionController;
 use App\Http\Controllers\Admin\EtudiantController;
 use App\Http\Controllers\Admin\EnseignantController;
@@ -14,47 +15,48 @@ use App\Http\Controllers\Admin\EmploiDuTempsController;
 use App\Http\Controllers\Admin\NoteController;
 use App\Http\Controllers\Admin\ModuleController;
 use App\Http\Controllers\Etudiant\DashboardController as EtudiantDashboardController;
+use App\Http\Controllers\Etudiant\AbsenceController as EtudiantAbsenceController;
+use App\Http\Controllers\Etudiant\EmploiController as EtudiantEmploiController;
+use App\Http\Controllers\Etudiant\NoteController as EtudiantNoteController;
+use App\Http\Controllers\Etudiant\DocumentController as EtudiantDocumentController;
+use App\Http\Controllers\Etudiant\ProfileController as EtudiantProfileController;
 use App\Http\Controllers\Enseignant1\DashboardController as EnseignantDashboardController;
 use App\Http\Controllers\Enseignant1\EnseignantEtudiantController;
 use App\Http\Controllers\Enseignant1\EnseignantModuleController;
 use App\Http\Controllers\Enseignant1\PostController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\CoursController;
+use App\Http\Controllers\Enseignant1\AbsenceController as EnseignantAbsenceController;
+use App\Http\Controllers\Enseignant1\NoteController as EnseignantNoteController;
+use App\Http\Controllers\Enseignant1\ProfileController as EnseignantProfileController;
+use App\Http\Controllers\Enseignant1\EmploiDuTempsController as EnseignantEmploiController;
+use App\Http\Controllers\Enseignant1\DocumentController as EnseignantDocumentController;
+
 
 /*
 |--------------------------------------------------------------------------
 | Routes publiques
 |--------------------------------------------------------------------------
 */
-Route::get('/', fn() => view('home'));
-
-
-
+Route::get('/', fn() => view('welcome'));
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::get('/preinscription', [PreinscriptionController::class, 'create'])->name('preinscription.create');
-Route::post('/preinscription', [PreinscriptionController::class, 'store'])->name('preinscription.store');
+Route::post('/preinscription/store', [PreinscriptionController::class, 'store'])->name('preinscription.store');
 
 /*
 |--------------------------------------------------------------------------
 | Authentification globale
 |--------------------------------------------------------------------------
 */
-
-
-Route::get('/', function () {
-    return view('welcome');
-});
-
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Route de déconnexion globale
+    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 });
 
 require __DIR__.'/auth.php';
@@ -64,7 +66,7 @@ require __DIR__.'/auth.php';
 | SuperAdmin
 |--------------------------------------------------------------------------
 */
-Route::middleware(['superadmin'])->prefix('superadmin')->name('superadmin.')->group(function () {
+Route::middleware(['auth', 'role:superadmin'])->prefix('superadmin')->name('superadmin.')->group(function () {
     Route::get('/dashboard', [SuperAdminDashboardController::class, 'index'])->name('dashboard');
 
     Route::resource('admins', AdminController::class)->except(['show']);
@@ -78,7 +80,7 @@ Route::middleware(['superadmin'])->prefix('superadmin')->name('superadmin.')->gr
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
     // Profil
     Route::get('/profile/edit', [AdminController::class, 'editProfile'])->name('profile.edit');
@@ -118,70 +120,75 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     // Préinscriptions
     Route::resource('preinscriptions', PreinscriptionController::class)->except(['create', 'store']);
+    Route::post('/preinscriptions', [PreinscriptionController::class, 'store'])->name('preinscriptions.store');
     Route::post('preinscriptions/{id}/accept', [PreinscriptionController::class, 'accept'])->name('preinscriptions.accept');
     Route::delete('preinscriptions/{id}/reject', [PreinscriptionController::class, 'reject'])->name('preinscriptions.reject');
-
-    // Déconnexion admin
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
+
 
 /*
 |--------------------------------------------------------------------------
 | Étudiant
 |--------------------------------------------------------------------------
 */
-Route::prefix('etudiant')->middleware(['auth', 'role:etudiant'])->group(function () {
-    Route::get('/dashboard', [EtudiantDashboardController::class, 'index'])->name('etudiant.dashboard');
-    Route::get('/absences', [EtudiantAbsenceController::class, 'index'])->name('etudiant.absences');
-    Route::get('/emploi-du-temps', [EtudiantEmploiController::class, 'index'])->name('etudiant.emploi');
-    Route::get('/notes', [EtudiantNoteController::class, 'index'])->name('etudiant.notes');
-    Route::get('/modules', [EtudiantModuleController::class, 'index'])->name('etudiant.modules');
+Route::middleware(['auth', 'role:etudiant'])->prefix('etudiant')->name('etudiant.')->group(function () {
+    Route::get('/dashboard', [EtudiantDashboardController::class, 'index'])->name('dashboard');
+    Route::get('absences', [EtudiantAbsenceController::class, 'index'])->name('absences.index');
+    Route::get('/emploi', [EtudiantEmploiController::class, 'index'])->name('emploi');
+    Route::get('/notes', [EtudiantNoteController::class, 'index'])->name('notes');
+    Route::get('/documents', [EtudiantDocumentController::class, 'index'])->name('documents');
+    Route::get('/profile', [EtudiantProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [EtudiantProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/password', [EtudiantProfileController::class, 'updatePassword'])->name('profile.password');
 });
-
 /*
 |--------------------------------------------------------------------------
 | Enseignant
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'role:enseignant'])->prefix('enseignant1')->name('enseignant1.')->group(function () {
-        // Dashboard
-        Route::get('/dashboard1', [EnseignantDashboardController::class, 'dashboard1'])->name('dashboard1');
+Route::middleware(['auth', 'role:enseignant'])->prefix('enseignant')->name('enseignant.')->group(function () {
+    // Dashboard
+    Route::get('/dashboard', [EnseignantDashboardController::class, 'index'])->name('dashboard');
+// Remove the '1' suffix for consistency
 
-        // Profil
-        Route::get('profile/edit', [EnseignantController::class, 'editProfile'])->name('profile.edit');
-        Route::put('profile/update', [EnseignantController::class, 'updateProfile'])->name('profile.update');
+    // Profil
+    Route::get('profile/edit', [EnseignantProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('profile/update', [EnseignantProfileController::class, 'update'])->name('profile.update');
 
-        // Étudiants
-        Route::prefix('etudiants')->name('etudiants.')->group(function () {
-            Route::get('/{enseignantId}', [EnseignantEtudiantController::class, 'index'])->name('index');
-            Route::get('/{etudiant}/absences', [EnseignantEtudiantController::class, 'showAbsences'])->name('absences');
-            Route::get('/{etudiant}', [EnseignantEtudiantController::class, 'showProfile'])->name('profile');
-        });
+    // Étudiants
+    Route::prefix('etudiants')->name('etudiants.')->group(function () {
+        Route::get('/', [EnseignantEtudiantController::class, 'index'])->name('index');
+        Route::get('/{etudiant}/absences', [EnseignantEtudiantController::class, 'showAbsences'])->name('absences');
+        Route::get('/{etudiant}', [EnseignantEtudiantController::class, 'showProfile'])->name('profile');
+    });
 
-        // Absences
-        Route::resource('absences', AbsenceController::class)->only(['index', 'create', 'store']);
+    // Absences
+    Route::resource('absences', \App\Http\Controllers\Enseignant1\AbsenceController::class);
 
-        // Emplois du temps
-        Route::prefix('emploi-du-temps')->group(function () {
-            Route::get('/', [EmploiDuTempsController::class, 'index'])->name('enseignant.emploi.index');
-        });
+    // Emplois du temps
+    Route::get('/emploi-du-temps', [EnseignantEmploiController::class, 'index'])->name('emploi.index');
 
-        // Modules & posts
-        Route::prefix('modules')->group(function () {
-            Route::get('/', [EnseignantModuleController::class, 'index'])->name('modules.index');
-            Route::post('/{module}/posts', [PostController::class, 'store'])->name('modules.posts.store');
-        });
+    // Modules & posts
+    Route::prefix('modules')->name('modules.')->group(function () {
+        Route::get('/', [EnseignantModuleController::class, 'index'])->name('index');
+        Route::post('/{module}/posts', [PostController::class, 'store'])->name('posts.store');
+    });
 
-        // Notes
-        Route::prefix('notes')->group(function () {
-            Route::get('/', [NoteController::class, 'index'])->name('notes.index');
-            Route::get('/create', [NoteController::class, 'create'])->name('notes.create');
-            Route::post('/', [NoteController::class, 'store'])->name('notes.store');
-        });
+    // Notes
+    Route::prefix('notes')->name('notes.')->group(function () {
+        Route::get('/', [EnseignantNoteController::class, 'index'])->name('index');
+        Route::get('/create', [EnseignantNoteController::class, 'create'])->name('create');
+        Route::post('/', [EnseignantNoteController::class, 'store'])->name('store');
+    });
 
-        // Documents
-        Route::resource('documents', DocumentController::class)->only(['index', 'create', 'store']);
+    // Documents
+    Route::resource('documents', EnseignantDocumentController::class);
+    Route::get('/documents/create', [EnseignantDocumentController::class, 'create'])->name('documents.create');
 
-        // Cours
-        Route::resource('cours', CoursController::class);
+    // Cours
+    Route::resource('cours', CoursController::class);
+
+    // Classes
+    Route::resource('classes', ClasseController::class);
+
 });

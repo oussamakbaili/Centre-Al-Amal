@@ -1,7 +1,3 @@
-@extends('layouts.enseignant')
-
-@section('content')
-
 <div class="container py-4">
     <h2 class="h4 fw-bold mb-4">
         <i class="fas fa-user-graduate me-2 text-primary"></i>Mes Étudiants
@@ -13,42 +9,36 @@
                 <table class="table table-hover mb-0 align-middle">
                     <thead class="table-light">
                         <tr>
-                            <th scope="col" class="ps-4">Nom</th>
+                            <th scope="col" class="ps-4">Photo</th>
+                            <th scope="col">Nom</th>
                             <th scope="col">Email</th>
-                            <th scope="col">Groupe</th>
-                            <th scope="col">Modules</th>
+                            <th scope="col">CIN</th>
+                            <th scope="col">Date de Naissance</th>
+                            <th scope="col">Adresse</th>
+                            <th scope="col">Téléphone</th>
                             <th scope="col" class="text-end pe-4">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($etudiants as $etudiant)
                             <tr>
-                                <td class="fw-semibold ps-4">
-                                    <a href="{{ route('enseignant.etudiants.profile', $etudiant->id) }}"
-                                       class="text-decoration-none text-dark">
-                                        {{ $etudiant->nom }}
-                                    </a>
+                                <td class="ps-4">
+                                    <img src="{{ asset('storage/' . $etudiant->photo) }}" alt="Photo de profil"
+                                         class="rounded-circle" width="40" height="40">
+                                </td>
+                                <td class="fw-semibold">
+                                    {{ $etudiant->nom }}
                                 </td>
                                 <td>{{ $etudiant->email }}</td>
-                                <td>{{ $etudiant->groupe }}</td>
-                                <td>
-                                    @foreach($etudiant->modules as $module)
-                                        @if(auth()->user()->enseignant->modules->contains($module))
-                                            <span class="badge bg-primary">{{ $module->nom }}</span>
-                                        @endif
-                                    @endforeach
-                                </td>
+                                <td>{{ $etudiant->cin }}</td>
+                                <td>{{ \Carbon\Carbon::parse($etudiant->date_naissance)->format('d/m/Y') }}</td>
+                                <td>{{ $etudiant->adresse }}</td>
+                                <td>{{ $etudiant->telephone }}</td>
                                 <td class="text-end pe-4">
-                                    <div class="btn-group btn-group-sm" role="group">
-                                        <a href="{{ route('enseignant.etudiants.profile', $etudiant->id) }}" 
-                                           class="btn btn-outline-info px-3" title="Voir le profil">
-                                            <i class="far fa-user"></i>
-                                        </a>
-                                        <a href="{{ route('enseignant.etudiants.absences', $etudiant->id) }}" 
-                                           class="btn btn-outline-warning px-3" title="Consulter les absences">
-                                            <i class="far fa-calendar-alt"></i>
-                                        </a>
-                                    </div>
+                                    <a href="{{ route('enseignant.etudiants.absences', $etudiant->id) }}"
+                                       class="btn btn-outline-warning btn-sm" title="Consulter les absences">
+                                        <i class="far fa-calendar-alt me-1"></i> Absences
+                                    </a>
                                 </td>
                             </tr>
                         @endforeach
@@ -58,19 +48,3 @@
         </div>
     </div>
 </div>
-@endsection
-
-@push('styles')
-<style>
-    .badge {
-        font-size: 0.75rem;
-        padding: 0.35em 0.5em;
-    }
-    .table-hover tbody tr:hover {
-        background-color: #f8f9fa;
-    }
-    a.text-decoration-none:hover {
-        text-decoration: underline;
-    }
-</style>
-@endpush

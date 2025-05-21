@@ -1,6 +1,4 @@
-@extends('layouts.admin')
 
-@section('content')
 <h2>Emplois du temps</h2>
 <a href="{{ route('admin.emplois.create') }}" class="btn btn-primary">Ajouter</a>
 <table class="table">
@@ -36,4 +34,4 @@
         @endforeach
     </tbody>
 </table>
-@endsection
+

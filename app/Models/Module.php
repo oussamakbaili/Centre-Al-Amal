@@ -13,16 +13,16 @@ class Module extends Model
     protected $fillable = ['nom', 'code', 'description', 'enseignant_id'];
     protected $table = 'modules';
 
-   
+
    // every module has one enseignant
-    public function enseignant()
-    {
-        return $this->belongsTo(Enseignant::class);
-    }
+   public function enseignant()
+   {
+       return $this->hasOne(Enseignant::class);
+   }
     public function etudiants()
     {
         return $this->belongsToMany(Etudiant::class, 'etudiant_module', 'module_id', 'etudiant_id');
-    }  
+    }
 
     public function absences()
     {

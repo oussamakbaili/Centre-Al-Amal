@@ -74,7 +74,7 @@
                 </div>
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <h2 class="text-xl font-semibold mb-4">Nombre de préinscriptions</h2>
-                    <p class="text-3xl font-bold">{{ $nombrePreinscriptions }}</p>
+                    <p class="text-3xl font-bold"></p>
                 </div>
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <h2 class="text-xl font-semibold mb-4">Nombre de notes</h2>
@@ -82,7 +82,7 @@
                 </div>
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <h2 class="text-xl font-semibold mb-4">Nombre d'emplois du temps</h2>
-                    <p class="text-3xl font-bold">{{ $nombreEmploiDuTemps }}</p>
+                    <p class="text-3xl font-bold"></p>
                 </div>
             </div>
         </div>

@@ -3,21 +3,25 @@
 namespace App\Http\Controllers\Etudiant;
 
 use App\Http\Controllers\Controller;
-use App\Models\Note;
 use Illuminate\Support\Facades\Auth;
 
 class NoteController extends Controller
 {
     public function index()
     {
-        $notes = Note::with('module')
-            ->where('etudiant_id', Auth::id())
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $user = Auth::user();
+        $etudiant = $user->etudiant;
 
-        return view('etudiant.notes', [
-            'title' => 'Mes Notes',
-            'notes' => $notes
-        ]);
+        // Charger toutes les notes avec les modules
+        $notes = $etudiant->notes()->with('module')->latest()->paginate(10);
+
+        // Calculer la moyenne générale
+        $moyenneGenerale = $notes->avg('valeur');
+
+        // Grouper les notes par module pour un meilleur affichage
+        $notesParModule = $notes->groupBy('module.nom');
+
+        return view('etudiant.notes', compact('notes', 'moyenneGenerale', 'etudiant'));
+
     }
 }

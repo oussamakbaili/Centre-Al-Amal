@@ -57,18 +57,27 @@ class Etudiant extends Authenticatable
         return $this->hasMany(Note::class);
     }
 
-    public function emploidutemps()
+    public function emplois()
     {
-        return $this->hasMany(Emploidutemps::class);
+        return $this->hasMany(Emploidutemps::class, 'etudiant_id');
     }
 
-    public function modules()
+    public function module()
     {
-        return $this->belongsToMany(Module::class, 'etudiant_module', 'etudiant_id', 'module_id');
+        return $this->belongsTo(Module::class);
     }
 
     public function groupe()
     {
         return $this->belongsTo(Groupe::class);
+    }
+    public function classes()
+    {
+        return $this->belongsToMany(Classe::class);
+    }
+
+    public function documents()
+    {
+        return $this->hasMany(Document::class);
     }
 }

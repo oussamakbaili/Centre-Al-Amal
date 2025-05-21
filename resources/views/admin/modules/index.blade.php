@@ -1,9 +1,7 @@
-@extends('layouts.admin')
 
-@section('content')
 <div class="container mx-auto px-4">
     <h1 class="text-2xl font-bold mb-6">Liste des Modules</h1>
-    
+
     <div class="bg-white shadow-md rounded my-6">
         <table class="min-w-full">
             <thead class="bg-gray-200">
@@ -18,7 +16,7 @@
                 <tr>
                     <td class="px-6 py-4 whitespace-nowrap">{{ $module->nom }}</td>
                     <td class="px-6 py-4">{{ $module->description }}</td>
-                    
+
                     <td class="px-6 py-4 whitespace-nowrap">
                         <a href="{{ route('admin.modules.edit', $module->id) }}" class="text-blue-600 hover:text-blue-900 mr-2">Modifier</a>
                         <form action="{{ route('admin.modules.destroy', $module->id) }}" method="POST" class="inline">
@@ -33,4 +31,3 @@
         </table>
     </div>
 </div>
-@endsection

@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Enseignant1;
 use App\Http\Controllers\Controller;
 use App\Models\Absence;
 use App\Models\Etudiant;
+use App\Models\Enseignant;
+
 use App\Models\Module;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
@@ -13,10 +15,17 @@ class AbsenceController extends Controller
 {
     public function index()
     {
-        $modules = auth()->user()->enseignant->modules()->with('absences')->get();
-        return view('enseignant.absences.index', compact('modules'));
-    }
+        // 1. Get authenticated teacher's user_id
+        $userId = auth()->id();
 
+        // 2. Find teacher record
+        $enseignant = Enseignant::where('user_id', $userId)->firstOrFail();
+
+        // 3. Obtenir les absences de l'enseignant connecté
+        $absences = Absence::where('enseignant_id', $enseignant->id)->get();
+
+        return view('enseignant.absences.index', compact('absences'));
+    }
 
     public function create()
     {

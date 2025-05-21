@@ -8,24 +8,36 @@ use Illuminate\Support\Facades\Auth;
 
 class RoleMiddleware
 {
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure  $next
+     * @param  string  $role
+     * @return mixed
+     */
     public function handle(Request $request, Closure $next, $role)
     {
-        // Tester tous les guards configurés
-        foreach (array_keys(config('auth.guards')) as $guard) {
-            if (Auth::guard($guard)->check()) {
-                $user = Auth::guard($guard)->user();
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
 
-                if ($user->role === $role) {
-                    // Authentifié avec le bon rôle
-                    return $next($request);
-                } else {
-                    abort(403, 'Accès non autorisé');
-                }
+        if (Auth::user()->role !== $role) {
+            // Rediriger en fonction du rôle de l'utilisateur connecté
+            switch (Auth::user()->role) {
+                case 'superadmin':
+                    return redirect()->route('superadmin.dashboard');
+                case 'admin':
+                    return redirect()->route('admin.dashboard');
+                case 'enseignant':
+                    return redirect()->route('enseignant.dashboard'); // removed '1'
+                case 'etudiant':
+                    return redirect()->route('etudiant.dashboard');
+                default:
+                    return redirect()->route('login');
             }
         }
 
-        // Aucun utilisateur connecté
-        abort(403, 'Non authentifié');
+        return $next($request);
     }
-
 }

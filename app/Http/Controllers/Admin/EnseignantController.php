@@ -19,7 +19,7 @@ class EnseignantController extends Controller
     {
         $search = $request->input('search');
         $sort = $request->input('sort', 'nom');
-        
+
         $query = Enseignant::with('module')
             ->select('enseignants.*')
             ->when($search, function ($query, $search) {
@@ -28,12 +28,12 @@ class EnseignantController extends Controller
                       ->orWhere('email', 'like', "%{$search}%");
             })
             ->orderBy($sort);
-        
-        $enseignants = $query->paginate(10);
-        
-        
 
-        
+        $enseignants = $query->paginate(10);
+
+
+
+
         return view('admin.enseignants.index', compact('enseignants', 'search', 'sort'));
     }
 
@@ -48,24 +48,32 @@ class EnseignantController extends Controller
         // Génération d’un mot de passe aléatoire
         $password = Str::random(8);
         $hashedPassword = Hash::make($password);
-    
+
         // Validation du formulaire
         $request->validate([
             'nom' => 'required|string',
             'prenom' => 'required|string',
-            'email' => 'required|email|unique:users,email', 
+            'email' => 'required|email|unique:users,email',
             'photo' => 'nullable|image',
             'id_module' => "required",
         ]);
-    
+
         // Traitement de la photo
         $photoPath = null;
         if ($request->hasFile('photo')) {
             $photoPath = $request->file('photo')->store('photos', 'public');
         }
-    
+        $user = User::create([
+            'email' => $request->email,
+            'password' => $hashedPassword,
+            'role' => 'enseignant',
+
+            'nom' => $request->nom,
+        ]);
+
         // Création de l’enseignant
         $enseignant = Enseignant::create([
+            'user_id' => $user->id,
             'nom' => $request->nom,
             'prenom' => $request->prenom,
             'email' => $request->email,
@@ -73,32 +81,26 @@ class EnseignantController extends Controller
             'password' => $hashedPassword,
             'module_id' => $request->id_module,
         ]);
-    
+
         // Création de l'utilisateur lié
-        $user = User::create([
-            'email' => $request->email,
-            'password' => $hashedPassword,
-            'role' => 'enseignant',
-            'enseignant_id' => $enseignant->id,
-            'nom' => $request->nom,
-        ]);
-    
+
+
         // Associer les modules si fournis
-        if ($request->filled('modules')) {
-            $enseignant->module()->attach($request->modules);
+        if ($request->filled('module')) {
+            $enseignant->module()->attach($request->module);
         }
-    
+
         // Envoi de l'email avec les identifiants
         Mail::to($enseignant->email)->send(new EnseignantRegistered($enseignant, $password));
-    
+
         return redirect()->route('admin.enseignants.index')->with('success', 'Enseignant ajouté avec succès.');
     }
 
     public function edit($id)
     {
         $enseignant = Enseignant::with('module')->findOrFail($id);
-        $modules = Module::all();
-        return view('admin.enseignants.edit', compact('enseignant', 'modules'));
+        $module = Module::all();
+        return view('admin.enseignants.edit', compact('enseignant', 'module'));
     }
 
     public function update(Request $request, Enseignant $enseignant)
@@ -127,14 +129,14 @@ class EnseignantController extends Controller
 
         ]);
 
-   
+
 
         return redirect()->route('admin.enseignants.index')->with('success', 'Enseignant mis à jour avec succès.');
     }
 
     public function destroy(Enseignant $enseignant)
     {
-        
+
         $enseignant->delete();
 
         return redirect()->route('admin.enseignants.index')->with('success', 'Enseignant supprimé avec succès.');

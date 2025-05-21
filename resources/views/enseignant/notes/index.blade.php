@@ -1,47 +1,36 @@
-@extends('layouts.enseignant')
+<div class="container">
+    <h2 class="my-4">Gestion des Notes</h2>
 
-@section('content')
-<div class="container-fluid px-4">
-    <h1 class="mt-4">Gestion des Notes</h1>
-    
-    <div class="card mb-4">
-        <div class="card-header bg-dark text-white">
-            <i class="fas fa-graduation-cap me-1"></i>
-            Notes par Module
-        </div>
-        <div class="card-body">
-            <div class="row mb-3">
-                <div class="col-md-4">
-                    <select class="form-select" id="module-select">
-                        <option value="">Sélectionnez un module</option>
-                        @foreach($modules as $module)
-                        <option value="{{ $module->id }}">{{ $module->nom }}</option>
-                        @endforeach
-                    </select>
-                </div>
+    @foreach($modules as $module)
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h3>{{ $module->nom }}</h3>
             </div>
-
-            <div class="table-responsive" id="notes-container">
-                <!-- Contenu chargé via AJAX -->
+            <div class="card-body">
+                @if($module->notes->count() > 0)
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Étudiant</th>
+                                <th>Note (/20)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($module->notes as $note)
+                                <tr>
+                                    <td>{{ $note->etudiant->nom }} {{ $note->etudiant->prenom }}</td>
+                                    <td>{{ $note->note }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @else
+                    <div class="alert alert-info">
+                        Aucune note enregistrée pour ce module.
+                    </div>
+                @endif
             </div>
         </div>
-    </div>
+    @endforeach
 </div>
-@endsection
 
-@push('scripts')
-<script>
-    $(document).ready(function() {
-        $('#module-select').change(function() {
-            const moduleId = $(this).val();
-            if(moduleId) {
-                $.get(`/enseignant/notes/module/${moduleId}`, function(data) {
-                    $('#notes-container').html(data);
-                });
-            } else {
-                $('#notes-container').html('');
-            }
-        });
-    });
-</script>
-@endpush

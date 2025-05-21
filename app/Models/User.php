@@ -9,11 +9,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    public function roleable()
-    {
-        return $this->morphTo();
-    }
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
     protected $fillable = [
         'nom',
@@ -21,6 +17,22 @@ class User extends Authenticatable
         'password', 
         'role',
     ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
+
+    public function hasRole($role)
+    {
+        return $this->role === $role;
+    }
+
     public function user()
     {
         return $this->hasOne(User::class, 'id', 'user_id');
@@ -35,6 +47,12 @@ class User extends Authenticatable
     {
         return $this->hasOne(Etudiant::class);
     }
+
+    public function admin()
+    {
+        return $this->hasOne(Admin::class);
+    }
+    
     public function role()
     {
         return $this->belongsTo(Role::class);

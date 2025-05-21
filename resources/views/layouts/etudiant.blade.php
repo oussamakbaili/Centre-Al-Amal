@@ -1,58 +1,28 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Étudiant - Centre Al Amal</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body class="bg-gray-100">
-    <div class="flex h-screen">
-        <!-- Sidebar -->
-        <div class="w-64 bg-blue-800 text-white shadow-lg">
-            <div class="p-4 border-b border-blue-700">
-                <h1 class="text-xl font-bold">Centre Al Amal</h1>
-                <p class="text-sm text-blue-200">Étudiant Dashboard</p>
-            </div>
-            <nav class="mt-4">
-                <x-etudiant.sidebar-item href="{{ route('etudiant.dashboard') }}" icon="fas fa-home" active="{{ request()->routeIs('etudiant.dashboard') }}">
-                    Tableau de bord
-                </x-etudiant.sidebar-item>
-                <x-etudiant.sidebar-item href="{{ route('etudiant.absences') }}" icon="fas fa-calendar-times" active="{{ request()->routeIs('etudiant.absences') }}">
-                    Mes Absences
-                </x-etudiant.sidebar-item>
-                <x-etudiant.sidebar-item href="{{ route('etudiant.emploi') }}" icon="fas fa-calendar-alt" active="{{ request()->routeIs('etudiant.emploi') }}">
-                    Emploi du temps
-                </x-etudiant.sidebar-item>
-                <x-etudiant.sidebar-item href="{{ route('etudiant.notes') }}" icon="fas fa-graduation-cap" active="{{ request()->routeIs('etudiant.notes') }}">
-                    Mes Notes
-                </x-etudiant.sidebar-item>
-                <x-etudiant.sidebar-item href="{{ route('etudiant.modules') }}" icon="fas fa-book" active="{{ request()->routeIs('etudiant.modules') }}">
-                    Modules & Ressources
-                </x-etudiant.sidebar-item>
-            </nav>
-        </div>
-
-        <!-- Main Content -->
-        <div class="flex-1 overflow-y-auto">
-            <!-- Top Navigation -->
-            <header class="bg-white shadow-sm">
-                <div class="flex justify-between items-center p-4">
-                    <h2 class="text-xl font-semibold text-gray-800">@yield('title')</h2>
-                    <div class="flex items-center space-x-4">
-                        <span class="text-gray-700">{{ Auth::user()->name }}</span>
-                        <img class="h-8 w-8 rounded-full" src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}">
-                    </div>
-                </div>
-            </header>
-
-            <!-- Content -->
-            <main class="p-6">
-                @yield('content')
-            </main>
-        </div>
+<!-- Sidebar -->
+<aside class="w-64 bg-gray-800 text-white min-h-screen fixed">
+    <div class="p-4">
+        <h2 class="text-xl font-semibold">Tableau de bord étudiant</h2>
     </div>
-</body>
-</html>
+    <nav class="mt-6">
+        <div>
+            <a href="{{ route('etudiant.dashboard') }}" class="block py-2 px-4 hover:bg-gray-700 {{ request()->routeIs('etudiant.dashboard') ? 'bg-gray-700' : '' }}">
+                Tableau de bord
+            </a>
+            <a href="{{ route('etudiant.emploi') }}" class="block py-2 px-4 hover:bg-gray-700 {{ request()->routeIs('etudiant.emploi') ? 'bg-gray-700' : '' }}">
+                Emploi du temps
+            </a>
+            <a href="{{ route('etudiant.notes') }}" class="block py-2 px-4 hover:bg-gray-700 {{ request()->routeIs('etudiant.notes') ? 'bg-gray-700' : '' }}">
+                Notes
+            </a>
+            <a href="{{ route('etudiant.absences.index') }}" class="block py-2 px-4 hover:bg-gray-700 {{ request()->routeIs('etudiant.absences.*') ? 'bg-gray-700' : '' }}">
+                Absences
+            </a>
+            <a href="{{ route('etudiant.documents') }}" class="block py-2 px-4 hover:bg-gray-700 {{ request()->routeIs('etudiant.documents') ? 'bg-gray-700' : '' }}">
+                Documents
+            </a>
+            <a href="{{ route('etudiant.profile.edit') }}" class="block py-2 px-4 hover:bg-gray-700 {{ request()->routeIs('etudiant.profile.*') ? 'bg-gray-700' : '' }}">
+                Mon Profil
+            </a>
+        </div>
+    </nav>
+</aside>

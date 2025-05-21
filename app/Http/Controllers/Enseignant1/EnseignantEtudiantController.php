@@ -6,35 +6,27 @@ use App\Http\Controllers\Controller;
 use App\Models\Etudiant;
 use App\Models\Enseignant;
 use App\Models\Module;
+use App\Models\Absence;
+use Illuminate\Support\Facades\Auth;
 
 class EnseignantEtudiantController extends Controller
 {
-    public function index($enseignantId)
+    public function index()
     {
-        $enseignant = Enseignant::find($enseignantId);
-        
-        if (!$enseignant) {
-            abort(404, 'Enseignant non trouvé');
-        }
-        
-        $modules = $enseignant->modules()->pluck('id');
-        
-        $etudiants = Etudiant::whereHas('modules', function ($query) use ($modules) {
-            $query->whereIn('modules.id', $modules);
-        })->get();
-        
+        $etudiants = etudiant::all();
+
         return view('enseignant.etudiants.index', compact('etudiants'));
     }
 
     public function showProfile($id)
     {
         $etudiant = Etudiant::with([
-            'groupe', 
-            'modules', 
-            'notes', 
+            'groupe',
+            'module',
+            'notes',
             'absences'
         ])->findOrFail($id);
-        
+
         return view('enseignant.etudiants.profile', compact('etudiant'));
     }
 

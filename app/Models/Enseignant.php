@@ -10,13 +10,13 @@ use App\Models\Module;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class Enseignant extends authenticatable
+class Enseignant extends Model
 {
     use HasFactory;
 
     protected $guard = 'enseignant';
 
-    protected $fillable = ['user_id', 'nom', 'prenom', 'email', 'module_id', 'photo', 'active', 'module', 'role', 'password','module_id'];
+    protected $fillable = ['user_id', 'nom', 'prenom', 'email', 'module_id', 'photo', 'active', 'module', 'role', 'password'];
 
     protected $hidden = [
      'remember_token',
@@ -26,12 +26,12 @@ class Enseignant extends authenticatable
     {
         $this->attributes['password'] = bcrypt($value);
     }
-    
+
     public function user()
     {
         return $this->belongsTo(User::class);
     }
-    
+
     protected static function boot()
     {
         parent::boot();
@@ -43,10 +43,11 @@ class Enseignant extends authenticatable
         });
     }
 
-    public function modules()
+    public function module()
     {
-        return $this->belongsToMany(Module::class, 'enseignant_module', 'enseignant_id', 'module_id');
+        return $this->belongsTo(Module::class, 'module_id');
     }
+
 
     public function getModulesStringAttribute()
     {
@@ -61,5 +62,15 @@ class Enseignant extends authenticatable
     public function emplois()
     {
         return $this->hasMany(Emploidutemps::class);
+    }
+
+    public function documents()
+    {
+        return $this->hasMany(Document::class);
+    }
+
+    public function classes()
+    {
+        return $this->hasMany(Classe::class);
     }
 }

@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up()
 {
-    Schema::table('emploi_du_temps', function (Blueprint $table) {
-        $table->string('salle')->nullable();
-    });
+    if (!Schema::hasColumn('emploi_du_temps', 'salle')) {
+        Schema::table('emploi_du_temps', function (Blueprint $table) {
+            $table->string('salle')->nullable()->after('heure_fin');
+        });
+    }
 }
 
 public function down()

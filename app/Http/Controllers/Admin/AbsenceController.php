@@ -6,7 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Absence;
 use App\Models\Enseignant;
 use App\Models\Etudiant;
+use App\Models\Module;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
+
 
 class AbsenceController extends Controller
 {
@@ -16,73 +19,78 @@ class AbsenceController extends Controller
         $type = $request->get('type');
 
         if ($type === 'Enseignant') {
-            // Absences uniquement liées à un enseignant
-            $absences = Absence::with('enseignant')
+            $absences = Absence::with(['enseignant', 'module'])
                 ->whereNotNull('enseignant_id')
                 ->get();
         } else {
-            // Absences uniquement liées à un étudiant
-            $absences = Absence::with('etudiant')
+            $absences = Absence::with(['etudiant', 'module'])
                 ->whereNotNull('etudiant_id')
                 ->get();
         }
-    
+
         return view('admin.absences.index', compact('absences', 'type'));
     }
-    
-    
 
     public function showByEnseignant($id)
     {
-        $enseignant = Enseignant::findOrFail($id);
+        $enseignant = Enseignant::with('modules')->findOrFail($id);
+
         $absences = Absence::where('type', 'Enseignant')
-                            ->where('enseignant_id', $id)
-                            ->get();
+            ->where('enseignant_id', $id)
+            ->with('module')
+            ->get();
 
         return view('admin.absences.byEnseignant', compact('enseignant', 'absences'));
     }
 
-
-
-
-    // Afficher le formulaire de création
     public function create()
     {
         $etudiants = Etudiant::all();
-        $enseignants = Enseignant::all(); 
-        return view('admin.absences.create', compact('etudiants', 'enseignants'));
+        $enseignants = Enseignant::all();
+        $modules = Module::all(); // Add this line
+
+        return view('admin.absences.create', compact('etudiants', 'enseignants', 'modules'));
     }
 
-    // Enregistrer une nouvelle absence
     public function store(Request $request)
     {
-    $request->validate([
+
+    $rules = [
         'type' => 'required|in:Étudiant,Enseignant',
         'date_absence' => 'required|date',
         'etat' => 'required',
         'motif' => 'nullable|string',
-    ]);
-
-    $absence = new Absence();
-    $absence->type = $request->type;
-    $absence->date_absence = $request->date_absence;
-    $absence->etat = $request->etat;
-    $absence->motif = $request->motif;
+    ];
 
     if ($request->type == 'Étudiant') {
-        $request->validate(['etudiant_id' => 'required|exists:etudiants,id']);
-        $absence->etudiant_id = $request->etudiant_id;
+        $rules['etudiant_id'] = 'required|exists:etudiants,id';
+        $rules['module_id'] = 'required|exists:modules,id';
     } else {
-        $request->validate(['enseignant_id' => 'required|exists:enseignants,id']);
-        $absence->enseignant_id = $request->enseignant_id;
+        $rules['enseignant_id'] = 'required|exists:enseignants,id';
     }
 
-    $absence->save();
+    $request->validate($rules);
 
-    return redirect()->route('admin.absences.index', ['type' => $request->type])
-                     ->with('success', 'Absence ajoutée avec succès.');
+        $absence = new Absence();
+        $absence->type = $request->type;
+        $absence->date_absence = $request->date_absence;
+        $absence->etat = $request->etat;
+        $absence->motif = $request->motif;
+        $absence->module_id = $request->module_id; // Add this line
+
+        if ($request->type == 'Étudiant') {
+            $request->validate(['etudiant_id' => 'required|exists:etudiants,id']);
+            $absence->etudiant_id = $request->etudiant_id;
+        } else {
+            $request->validate(['enseignant_id' => 'required|exists:enseignants,id']);
+            $absence->enseignant_id = $request->enseignant_id;
+        }
+
+        $absence->save();
+
+        return redirect()->route('admin.absences.index', ['type' => $request->type])
+                       ->with('success', 'Absence ajoutée avec succès.');
     }
-
 
     // Afficher les détails d'une absence
     public function show(Absence $absence)

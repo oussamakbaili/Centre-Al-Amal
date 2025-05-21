@@ -1,6 +1,8 @@
+
+
     <div class="container">
         <h2>Gestion des enseignants</h2>
-        
+
         <div class="mb-3">
             <form action="{{ route('admin.enseignants.index') }}" method="GET">
                 <input type="text" name="search" placeholder="Rechercher par nom, prénom ou email">
@@ -33,9 +35,10 @@
                     <td>{{ $enseignant->prenom }}</td>
                     <td>{{ $enseignant->email }}</td>
                     <td>
-                        
-                            <span class="badge bg-primary">{{ $enseignant->module ? $enseignant->module->nom : 'Aucun module' }}</span>
-                       
+
+                    <span class="badge bg-primary">
+    {{ $enseignant->module->first() ? $enseignant->module->first()->nom : 'Aucun module' }}
+</span>
                     </td>
                     <td>
                         <a href="{{ route('admin.enseignants.edit', $enseignant->id) }}" class="btn btn-sm btn-primary">Modifier</a>

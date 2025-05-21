@@ -1,6 +1,4 @@
-@extends('layouts.enseignant')
 
-@section('content')
 <div class="container mt-5">
     @auth
         @if(request()->is('enseignant/dashboard1'))
@@ -45,4 +43,4 @@
         </div>
     @endauth
 </div>
-@endsection
+

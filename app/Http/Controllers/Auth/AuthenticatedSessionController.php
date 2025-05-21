@@ -30,7 +30,7 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         $role = Auth::user()->role;
-
+        
         // Redirect based on role
         switch ($role) {
             case 'superadmin':
@@ -38,7 +38,7 @@ class AuthenticatedSessionController extends Controller
             case 'admin':
                 return redirect()->route('admin.dashboard');
             case 'enseignant':
-                return redirect()->route('enseignant1.dashboard1');
+                return redirect()->route('enseignant.dashboard'); // removed '1'
             case 'etudiant':
                 return redirect()->route('etudiant.dashboard');
             default:

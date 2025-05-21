@@ -9,7 +9,7 @@ class Emploidutemps extends Model
 {
     use HasFactory;
 
-    protected $table = 'emploi_du_temps'; 
+    protected $table = 'emploi_du_temps';
 
     protected $fillable = ['module_id', 'jour', 'heure_debut', 'heure_fin', 'salle', 'enseignant_id'];
 
@@ -20,7 +20,7 @@ class Emploidutemps extends Model
 
     public function enseignant()
     {
-        return $this->belongsTo(Enseignant::class);
+        return $this->belongsTo(User::class, 'enseignant_id');
     }
 
     public function etudiant()

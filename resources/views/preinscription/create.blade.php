@@ -30,7 +30,7 @@
                 </ul>
             </div>
         @endif
-        <form action="{{ route('admin.preinscriptions.store') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('preinscription.store') }}" method="POST" enctype="multipart/form-data">
     @csrf
     <div class="form-group">
         <label for="nom">Nom</label>

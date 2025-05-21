@@ -1,4 +1,3 @@
-
 <div class="container mt-4">
     @if (session('success'))
         <div class="alert alert-success">
@@ -37,14 +36,24 @@
             </select>
         </div>
 
+        <div class="mb-3" id="moduleSelect">
+            <label for="module_id">Module</label>
+            <select name="module_id" class="form-control">
+                <option value="">Sélectionnez un module</option>
+                @foreach ($modules as $module)
+                    <option value="{{ $module->id }}">{{ $module->nom }}</option>
+                @endforeach
+            </select>
+        </div>
+
         <div class="mb-3">
             <label for="date_absence">Date d'absence</label>
-            <input type="date" name="date_absence" class="form-control">
+            <input type="date" name="date_absence" class="form-control" required>
         </div>
 
         <div class="mb-3">
             <label for="etat">État</label>
-            <select name="etat" class="form-control">
+            <select name="etat" class="form-control" required>
                 <option value="Justifié">Justifié</option>
                 <option value="Non justifié">Non justifié</option>
             </select>
@@ -63,8 +72,17 @@
 <script>
     function toggleSelects() {
         var type = document.getElementById('type').value;
+        // Toggle student/teacher selects
         document.getElementById('etudiantSelect').style.display = (type === 'Étudiant') ? 'block' : 'none';
         document.getElementById('enseignantSelect').style.display = (type === 'Enseignant') ? 'block' : 'none';
+        // Toggle module select (only show for students)
+        document.getElementById('moduleSelect').style.display = (type === 'Étudiant') ? 'block' : 'none';
+        // Make module required only for students
+        document.querySelector('[name="module_id"]').required = (type === 'Étudiant');
     }
-</script>
 
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        toggleSelects();
+    });
+</script>

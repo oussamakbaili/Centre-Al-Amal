@@ -8,35 +8,29 @@ use Illuminate\Support\Facades\DB;
 return new class extends Migration
 {
     public function up()
-    {
-        Schema::table('notes', function (Blueprint $table) {
-            // Étape 1 : ajouter la colonne d'abord sans contrainte
-            $table->unsignedBigInteger('enseignant_id')->nullable()->after('id');
-        });
+{
+    // Étape 1 : ajouter la colonne nullable
+    Schema::table('notes', function (Blueprint $table) {
+        $table->foreignId('enseignant_id')
+              ->nullable()
+              ->constrained('enseignants')
+              ->onDelete('set null');
+    });
 
-        // Étape 2 : Affecter une valeur par défaut valide pour les lignes existantes
-        if (DB::table('enseignants')->exists()) {
-            $defaultEnseignantId = DB::table('enseignants')->value('id');
-            DB::table('notes')->update(['enseignant_id' => $defaultEnseignantId]);
-        } else {
-            // Si aucun enseignant n'existe, on stoppe avec une exception explicite
-            throw new Exception('Aucun enseignant trouvé pour assigner aux notes.');
-        }
+    // Étape 2 : assigner un enseignant par défaut si possible
+    $defaultEnseignant = DB::table('enseignants')->first();
 
-        // Étape 3 : ajouter la contrainte de clé étrangère
-        Schema::table('notes', function (Blueprint $table) {
-            $table->foreign('enseignant_id')
-                ->references('id')
-                ->on('enseignants')
-                ->onDelete('cascade');
-        });
+    if ($defaultEnseignant) {
+        DB::table('notes')->update(['enseignant_id' => $defaultEnseignant->id]);
     }
+    // Sinon, la colonne reste nullable
+}
 
-    public function down()
-    {
-        Schema::table('notes', function (Blueprint $table) {
-            $table->dropForeign(['enseignant_id']);
-            $table->dropColumn('enseignant_id');
-        });
-    }
+public function down()
+{
+    Schema::table('notes', function (Blueprint $table) {
+        $table->dropForeign(['enseignant_id']);
+        $table->dropColumn('enseignant_id');
+    });
+}
 };

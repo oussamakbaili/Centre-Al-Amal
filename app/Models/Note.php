@@ -29,5 +29,6 @@ class Note extends Model
     {
         return $this->belongsTo(Module::class);
     }
+
 }
 
