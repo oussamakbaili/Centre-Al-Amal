@@ -11,7 +11,6 @@
         .dropdown:hover .dropdown-menu {
             display: block;
         }
-
         .note-input {
             width: 80px;
         }
@@ -53,43 +52,67 @@
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Module</th>
                         @if($selectedModule)
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Note
-                                1</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Note
-                                2</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Note 1</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Note 2</th>
                         @endif
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Actions</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                    @forelse ($notes as $note)
-                                        @php
-                                            $noteValues = isset($note->notes) ? explode(',', $note->notes) : [];
-                                        @endphp
-                                        <tr>
-                                            <td class="px-6 py-4 whitespace-nowrap">{{ $note->etudiant->nom }} {{ $note->etudiant->prenom }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">{{ $note->module->nom }}</td>
+                    @php
+                        // Group notes by student and module
+                        $groupedNotes = [];
+                        foreach ($notes as $note) {
+                            $key = $note->etudiant_id . '-' . $note->module_id;
+                            if (!isset($groupedNotes[$key])) {
+                                $groupedNotes[$key] = [
+                                    'etudiant' => $note->etudiant,
+                                    'module' => $note->module,
+                                    'note1' => null,
+                                    'note2' => null,
+                                    'note1_id' => null,
+                                    'note2_id' => null
+                                ];
+                            }
+                            if ($note->note_type == 'note1') {
+                                $groupedNotes[$key]['note1'] = $note->note;
+                                $groupedNotes[$key]['note1_id'] = $note->id;
+                            } elseif ($note->note_type == 'note2') {
+                                $groupedNotes[$key]['note2'] = $note->note;
+                                $groupedNotes[$key]['note2_id'] = $note->id;
+                            }
+                        }
+                    @endphp
 
-                                            @if($selectedModule)
-                                                <td class="px-6 py-4 whitespace-nowrap">{{ $noteValues[0] ?? '' }}</td>
-                                                <td class="px-6 py-4 whitespace-nowrap">{{ $noteValues[1] ?? '' }}</td>
-                                            @endif
+                    @forelse ($groupedNotes as $key => $group)
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $group['etudiant']->nom }} {{ $group['etudiant']->prenom }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $group['module']->nom }}</td>
 
-                                            <td class="px-6 py-4 whitespace-nowrap space-x-2">
-                                                <button
-                                                    onclick="openEditModal({{ $note->etudiant_id }}, {{ $note->module_id }}, 
-                                                                                                '{{ $note->etudiant->nom }} {{ $note->etudiant->prenom }}',
-                                                                                                '{{ $note->module->nom }}', '{{ $noteValues[0] ?? '' }}', '{{ $noteValues[1] ?? '' }}')"
-                                                    class="text-blue-600 hover:text-blue-900">
-                                                    <i class="fas fa-edit"></i> Modifier
-                                                </button>
-                                            </td>
+                            @if($selectedModule)
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    {{ $group['note1'] !== null ? $group['note1'] : 'No note yet' }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    {{ $group['note2'] !== null ? $group['note2'] : 'No note yet' }}
+                                </td>
+                            @endif
 
-                                            
-                                            </td>
-                                        </tr>
+                            <td class="px-6 py-4 whitespace-nowrap space-x-2">
+                                <button
+                                    onclick="openEditModal({{ $group['etudiant']->id }}, {{ $group['module']->id }},
+                                            '{{ $group['etudiant']->nom }} {{ $group['etudiant']->prenom }}',
+                                            '{{ $group['module']->nom }}',
+                                            '{{ $group['note1'] ?? '' }}',
+                                            '{{ $group['note2'] ?? '' }}',
+                                            {{ $group['note1_id'] ?? 'null' }},
+                                            {{ $group['note2_id'] ?? 'null' }})"
+                                    class="text-blue-600 hover:text-blue-900">
+                                    <i class="fas fa-edit"></i> Modifier
+                                </button>
+                            </td>
+                        </tr>
                     @empty
                         <tr>
                             <td colspan="{{ $selectedModule ? 5 : 3 }}" class="px-6 py-4 text-center text-gray-500">
@@ -102,8 +125,7 @@
         </div>
 
         <!-- Modal de modification -->
-        <div id="editModal"
-            class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div id="editModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex items-center justify-center z-50">
             <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
                 <div class="p-6">
                     <h2 class="text-xl font-semibold text-gray-800 mb-4">Modifier les informations</h2>
@@ -111,20 +133,22 @@
                         @csrf
                         @method('PUT')
 
+                        <input type="hidden" name="note1_id" id="note1_id">
+                        <input type="hidden" name="note2_id" id="note2_id">
+
                         <div class="mb-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2">Étudiant</label>
-                            <select name="etudiant_id"
+                            <select name="etudiant_id" id="etudiant_id"
                                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                 @foreach($etudiants as $etudiant)
-                                    <option value="{{ $etudiant->id }}">{{ $etudiant->nom }} {{ $etudiant->prenom }}
-                                    </option>
+                                    <option value="{{ $etudiant->id }}">{{ $etudiant->nom }} {{ $etudiant->prenom }}</option>
                                 @endforeach
                             </select>
                         </div>
 
                         <div class="mb-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2">Module</label>
-                            <select name="module_id"
+                            <select name="module_id" id="module_id"
                                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                 @foreach($modules as $module)
                                     <option value="{{ $module->id }}">{{ $module->nom }}</option>
@@ -134,13 +158,13 @@
 
                         <div class="mb-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2">Note 1</label>
-                            <input type="number" name="note1" step="0.01" min="0" max="20"
+                            <input type="number" name="note1" id="note1" step="0.01" min="0" max="20"
                                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                         </div>
 
                         <div class="mb-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2">Note 2</label>
-                            <input type="number" name="note2" step="0.01" min="0" max="20"
+                            <input type="number" name="note2" id="note2" step="0.01" min="0" max="20"
                                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                         </div>
 
@@ -162,23 +186,21 @@
 
     <!-- Script modal -->
     <script>
-        function openEditModal(etudiantId, moduleId, etudiantName, moduleName, note1, note2) {
+        function openEditModal(etudiantId, moduleId, etudiantName, moduleName, note1, note2, note1Id, note2Id) {
             const modal = document.getElementById('editModal');
             const form = document.getElementById('editForm');
 
-            // Sélectionner l'étudiant et le module
-            document.querySelector(`select[name="etudiant_id"] option[value="${etudiantId}"]`).selected = true;
-            document.querySelector(`select[name="module_id"] option[value="${moduleId}"]`).selected = true;
+            // Set student and module
+            document.getElementById('etudiant_id').value = etudiantId;
+            document.getElementById('module_id').value = moduleId;
 
-            // Remplir les notes si elles existent
-            if (document.querySelector('input[name="note1"]')) {
-                document.querySelector('input[name="note1"]').value = note1;
-            }
-            if (document.querySelector('input[name="note2"]')) {
-                document.querySelector('input[name="note2"]').value = note2;
-            }
+            // Set notes
+            document.getElementById('note1').value = note1 || '';
+            document.getElementById('note2').value = note2 || '';
+            document.getElementById('note1_id').value = note1Id || '';
+            document.getElementById('note2_id').value = note2Id || '';
 
-            // Définir l'action du formulaire
+            // Set form action
             form.action = `/admin/notes/${etudiantId}/${moduleId}`;
 
             modal.classList.remove('hidden');

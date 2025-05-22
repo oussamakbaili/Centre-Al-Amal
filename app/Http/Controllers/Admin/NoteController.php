@@ -19,18 +19,14 @@ class NoteController extends Controller
         $query = Note::with(['etudiant', 'module']);
 
         if ($selectedModule) {
-            $query->where('module_id', $selectedModule)
-                ->selectRaw('etudiant_id, module_id, GROUP_CONCAT(id) as note_ids, GROUP_CONCAT(note) as notes')
-                ->groupBy('etudiant_id', 'module_id');
-        } else {
-            $query->select('etudiant_id', 'module_id')->distinct();
+            $query->where('module_id', $selectedModule);
         }
 
+        // Get all notes without grouping
         $notes = $query->get();
 
         return view('admin.notes.index', compact('notes', 'modules', 'selectedModule', 'etudiants'));
     }
-
     public function create()
     {
         $etudiants = Etudiant::all();

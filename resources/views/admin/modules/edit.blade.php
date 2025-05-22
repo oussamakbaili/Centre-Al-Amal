@@ -16,10 +16,6 @@
                 <label for="nom" class="block text-sm font-medium text-gray-700">Nom</label>
                 <input type="text" name="nom" id="nom" value="{{ $module->nom }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
             </div>
-            <div class="mb-4">
-                <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
-                <textarea name="description" id="description" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">{{ $module->description }}</textarea>
-            </div>
             <div class="flex justify-end">
                 <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Mettre à jour</button>
             </div>

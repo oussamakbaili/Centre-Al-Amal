@@ -21,7 +21,7 @@ class Module extends Model
    }
     public function etudiants()
     {
-        return $this->belongsToMany(Etudiant::class, 'etudiant_module', 'module_id', 'etudiant_id');
+        return $this->belongsToMany(Etudiant::class);
     }
 
     public function absences()

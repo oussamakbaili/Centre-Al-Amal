@@ -2,9 +2,7 @@
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Absences de {{ $etudiant->nom }} {{ $etudiant->prenom }}</h2>
-        <a href="{{ route('enseignant.etudiants.profile', $etudiant->id) }}" class="btn btn-outline-primary">
-            <i class="fas fa-arrow-left"></i> Retour au profil
-        </a>
+
     </div>
 
     <div class="card shadow-sm">

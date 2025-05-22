@@ -62,10 +62,11 @@ class Etudiant extends Authenticatable
         return $this->hasMany(Emploidutemps::class, 'etudiant_id');
     }
 
-    public function module()
-    {
-        return $this->belongsTo(Module::class);
-    }
+    public function modules()
+{
+    return $this->belongsToMany(Module::class);
+}
+
 
     public function groupe()
     {

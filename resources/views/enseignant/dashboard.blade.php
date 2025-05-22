@@ -34,11 +34,6 @@
                     </a>
                 </li>
                 <li class="mb-4">
-                    <a href="{{ route('enseignant.modules.index') }}" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('enseignant.modules.*') ? 'bg-blue-900' : '' }}">
-                        Modules
-                    </a>
-                </li>
-                <li class="mb-4">
                     <a href="{{ route('enseignant.notes.index') }}" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('enseignant.notes.*') ? 'bg-blue-900' : '' }}">
                         Notes
                     </a>

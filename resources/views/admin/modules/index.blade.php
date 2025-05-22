@@ -7,7 +7,6 @@
             <thead class="bg-gray-200">
                 <tr>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nom</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Description</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
                 </tr>
             </thead>
@@ -15,7 +14,6 @@
                 @foreach($modules as $module)
                 <tr>
                     <td class="px-6 py-4 whitespace-nowrap">{{ $module->nom }}</td>
-                    <td class="px-6 py-4">{{ $module->description }}</td>
 
                     <td class="px-6 py-4 whitespace-nowrap">
                         <a href="{{ route('admin.modules.edit', $module->id) }}" class="text-blue-600 hover:text-blue-900 mr-2">Modifier</a>
