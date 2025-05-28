@@ -91,7 +91,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('etudiants/{etudiant}/absences', [EtudiantController::class, 'showAbsences'])->name('etudiants.absences');
 
     // Enseignants
-    Route::resource('enseignants', EnseignantController::class)->except(['show']);
+    Route::resource('enseignants', EnseignantController::class);
     Route::get('enseignants/{enseignant}/modules', fn(App\Models\Enseignant $enseignant) => response()->json($enseignant->modules))->name('enseignants.modules');
     Route::get('enseignants/{id}/absences', [AbsenceController::class, 'showByEnseignant'])->name('enseignants.absences');
 
@@ -100,6 +100,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     // Modules
     Route::resource('modules', ModuleController::class);
+    Route::get('modules/{module}/students', [ModuleController::class, 'students'])->name('modules.students');
 
     // Emplois du temps
     Route::resource('emplois', EmploiDuTempsController::class);

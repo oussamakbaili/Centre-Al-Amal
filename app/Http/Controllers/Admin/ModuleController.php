@@ -13,7 +13,7 @@ class ModuleController extends Controller
     // Afficher la liste des modules
     public function index()
     {
-      $modules = Module::all();
+        $modules = Module::with(['enseignant', 'etudiants', 'notes'])->get();
         return view('admin.modules.index', compact('modules'));
     }
 
@@ -66,6 +66,13 @@ class ModuleController extends Controller
         $module->update($request->all());
         return redirect()->route('admin.modules.index')->with('success', 'Module mis à jour avec succès.');
     }
+    // Afficher les étudiants d'un module
+    public function students(Module $module)
+    {
+        $module->load('etudiants');
+        return view('admin.modules.students', compact('module'));
+    }
+
     // Supprimer un module
     public function destroy(Module $module)
     {
