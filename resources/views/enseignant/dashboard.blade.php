@@ -70,7 +70,6 @@
                     <p class="text-4xl font-bold text-green-600">{{ $nombreEmplois ?? 0 }}</p>
                 </a>
             </div>
-
             <!-- Calendrier -->
             <div class="bg-white p-6 rounded-lg shadow mb-8">
                 <div id='calendar'></div>

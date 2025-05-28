@@ -14,21 +14,26 @@ class Document extends Model
         'titre',
         'contenu',
         'fichier',
+        'module_id',
         'type_contenu'
+    ];
+    protected $dates = [
+        'created_at',
+        'updated_at'
     ];
 
     public function enseignant()
     {
-        return $this->belongsTo(Enseignant::class);
+        return $this->belongsTo(Enseignant::class, 'enseignant_id');
     }
     public function etudiant()
     {
-        return $this->belongsTo(Etudiant::class);
+        return $this->belongsTo(user::class, 'etudiant_id');
     }
 
     public function module()
     {
-        return $this->belongsTo(Module::class);
+        return $this->belongsTo(Module::class, 'module_id');
     }
     public function classe()
     {

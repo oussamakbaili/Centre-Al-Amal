@@ -85,6 +85,52 @@
                     <p class="text-3xl font-bold"></p>
                 </div>
             </div>
+            <!-- Section Scan QR Code -->
+<div class="bg-white p-6 rounded-lg shadow-md mt-6">
+    <h2 class="text-xl font-semibold mb-4">Scanner QR Code</h2>
+    <div id="scanner-section">
+        <video id="qr-video" width="300" height="200" class="mb-4"></video>
+        <button id="start-scanner" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">
+            Démarrer le scanner
+        </button>
+        <div id="scan-result" class="mt-4 hidden">
+            <p class="font-semibold">Résultat du scan:</p>
+            <p id="result-text"></p>
+        </div>
+    </div>
+</div>
+
+<!-- Script pour le scanner -->
+<script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
+<script>
+    document.getElementById('start-scanner').addEventListener('click', function() {
+        let scanner = new Instascan.Scanner({ video: document.getElementById('qr-video') });
+
+        scanner.addListener('scan', function (content) {
+            fetch(content, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('result-text').textContent = data.message;
+                document.getElementById('scan-result').classList.remove('hidden');
+            });
+        });
+
+        Instascan.Camera.getCameras().then(function (cameras) {
+            if (cameras.length > 0) {
+                scanner.start(cameras[0]);
+            } else {
+                alert('Aucune caméra trouvée');
+            }
+        });
+    });
+</script>
         </div>
     </div>
 </body>

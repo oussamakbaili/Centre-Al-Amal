@@ -15,8 +15,8 @@ return new class extends Migration
         $table->id();
         $table->unsignedBigInteger('enseignant_id');
         $table->string('titre');
-        $table->text('contenu')->nullable(); // Pour du texte
-        $table->string('fichier')->nullable(); // Pour les fichiers
+        $table->text('contenu');
+        $table->string('fichier');
         $table->timestamps();
 
         $table->foreign('enseignant_id')->references('id')->on('enseignants')->onDelete('cascade');

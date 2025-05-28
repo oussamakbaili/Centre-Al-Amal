@@ -262,6 +262,16 @@
                     </div>
                 </div>
             </div>
+            <!-- QR Code Section -->
+<div class="bg-white p-6 rounded-lg shadow-md mt-6">
+    <h2 class="text-xl font-semibold mb-4">Mon QR Code d'absence</h2>
+    <div class="flex flex-col items-center">
+        <div class="mb-4">
+            {!! QrCode::size(200)->generate(route('qrcode.generate', ['id' => $etudiant->id, 'type' => 'etudiant'])) !!}
+        </div>
+        <p class="text-sm text-gray-600">Présentez ce QR Code pour enregistrer votre présence</p>
+    </div>
+</div>
         </div>
     </div>
 </div>

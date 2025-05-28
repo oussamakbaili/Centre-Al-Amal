@@ -1,68 +1,89 @@
-<div class="max-w-6xl mx-auto p-6">
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold">Mes contenus pédagogiques</h1>
-        <a href="{{ route('enseignant.documents.create') }}"
-           class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-            + Ajouter du contenu
-        </a>
-    </div>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4>Mes Documents</h4>
+                    <a href="{{ route('enseignant.documents.create') }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Ajouter un document
+                    </a>
+                </div>
 
-    @forelse($classes as $classe)
-    <div class="mb-8 bg-white rounded-lg shadow overflow-hidden">
-        <!-- En-tête de la classe -->
-        <div class="bg-gray-50 px-6 py-4 border-b flex justify-between items-center">
-            <h2 class="text-xl font-semibold">{{ $classe->nom }}</h2>
-            <span class="text-sm text-gray-500">
-                {{ $classe->documents->count() }} contenu(s)
-            </span>
-        </div>
-
-        <!-- Liste des contenus -->
-        <div class="divide-y">
-            @forelse($classe->documents as $document)
-            <div class="p-6 hover:bg-gray-50">
-                <div class="flex justify-between items-start">
-                    <div class="flex-1">
-                        <h3 class="font-semibold text-lg">{{ $document->titre }}</h3>
-                        <p class="text-sm text-gray-500 mb-2">
-                            Ajouté le {{ $document->created_at->format('d/m/Y à H:i') }}
-                        </p>
-
-                        @if($document->contenu)
-                        <div class="prose max-w-none mt-2">
-                            {!! Str::markdown($document->contenu) !!}
+                <div class="card-body">
+                    {{-- Messages de succès/erreur --}}
+                    @if (session('success'))
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle"></i> {{ session('success') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
-                        @endif
-                    </div>
-
-                    @if($document->fichier)
-                    <div class="ml-4 flex-shrink-0">
-                        <a href="{{ asset('storage/' . $document->fichier) }}"
-                           target="_blank"
-                           class="inline-flex items-center px-3 py-1 bg-blue-50 text-blue-600 rounded-full">
-                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
-                            </svg>
-                            Télécharger
-                        </a>
-                        <p class="text-xs text-gray-500 mt-1 text-center">
-                            {{ Str::upper(pathinfo($document->fichier, PATHINFO_EXTENSION)) }}
-                        </p>
-                    </div>
                     @endif
+
+                    @if (session('error'))
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    @endif
+
+                    {{-- Liste des documents --}}
+                    @if($documents->count() > 0)
+                        <div class="list-group">
+                            @foreach($documents as $document)
+                                <div class="list-group-item border-0 mb-3">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <div class="d-flex align-items-center mb-1">
+                                                <i class="fas fa-file-alt me-2 text-primary"></i>
+                                                <h5 class="mb-0">{{ $document->titre }}</h5>
+                                            </div>
+                                            @if($document->contenu)
+                                                <p class="mb-1 text-muted">{{ $document->contenu }}</p>
+                                            @endif
+                                            <div class="d-flex align-items-center">
+                                                @if($document->fichier)
+                                                    <a href="{{ Storage::url($document->fichier) }}"
+                                                       target="_blank"
+                                                       class="btn btn-sm btn-outline-primary me-2">
+                                                        <i class="fas fa-download"></i> Télécharger
+                                                    </a>
+                                                @endif
+                                                <small class="text-muted me-2">
+                                                    <i class="fas fa-calendar-alt"></i>
+                                                    {{ $document->created_at->format('d M') }}
+                                                </small>
+                                                @if($document->module)
+                                                    <span class="badge bg-primary me-2">
+                                                        {{ $document->module->nom }}
+                                                    </span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="btn-group" role="group">
+                                            <a href="{{ route('enseignant.documents.show', $document->id) }}"
+                                               class="btn btn-sm btn-outline-info">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <form action="{{ route('enseignant.documents.destroy', $document->id) }}"
+                                                  method="POST"
+                                                  style="display: inline;"
+                                                  onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce document ?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                @if(!$loop->last)
+                                    <hr class="my-2">
+                                @endif
+                            @endforeach
+                        </div>
+
                 </div>
             </div>
-            @empty
-            <div class="p-6 text-center text-gray-500">
-                Aucun contenu pour cette classe
-            </div>
-            @endforelse
         </div>
     </div>
-    @empty
-    <div class="bg-blue-50 p-6 rounded-lg text-center">
-        <p class="text-blue-800 mb-4">Vous n'avez aucune classe attribuée.</p>
-        <a href="#" class="text-blue-600 hover:underline">Demander une classe</a>
-    </div>
-    @endforelse
 </div>

@@ -31,6 +31,7 @@ use App\Http\Controllers\Enseignant1\NoteController as EnseignantNoteController;
 use App\Http\Controllers\Enseignant1\ProfileController as EnseignantProfileController;
 use App\Http\Controllers\Enseignant1\EmploiDuTempsController as EnseignantEmploiController;
 use App\Http\Controllers\Enseignant1\DocumentController as EnseignantDocumentController;
+use App\Http\Controllers\QRCodeController;
 
 
 /*
@@ -149,7 +150,6 @@ Route::middleware(['auth', 'role:etudiant'])->prefix('etudiant')->name('etudiant
 Route::middleware(['auth', 'role:enseignant'])->prefix('enseignant')->name('enseignant.')->group(function () {
     // Dashboard
     Route::get('/dashboard', [EnseignantDashboardController::class, 'index'])->name('dashboard');
-// Remove the '1' suffix for consistency
 
     // Profil
     Route::get('profile/edit', [EnseignantProfileController::class, 'edit'])->name('profile.edit');
@@ -182,8 +182,10 @@ Route::middleware(['auth', 'role:enseignant'])->prefix('enseignant')->name('ense
     });
 
     // Documents
-    Route::resource('documents', EnseignantDocumentController::class);
+    Route::get('/documents', [EnseignantDocumentController::class, 'index'])->name('documents.index');
     Route::get('/documents/create', [EnseignantDocumentController::class, 'create'])->name('documents.create');
+    Route::delete('/documents/{id}', [EnseignantDocumentController::class, 'destroy'])->name('documents.destroy');
+    Route::post('/documents', [EnseignantDocumentController::class, 'store'])->name('documents.store');
 
     // Cours
     Route::resource('cours', CoursController::class);
@@ -192,3 +194,7 @@ Route::middleware(['auth', 'role:enseignant'])->prefix('enseignant')->name('ense
     Route::resource('classes', ClasseController::class);
 
 });
+
+// Routes pour le QR Code
+Route::post('/scan-qrcode', [App\Http\Controllers\QRCodeController::class, 'scan'])->name('qrcode.scan');
+Route::get('/generate-qrcode/{id}/{type}', [App\Http\Controllers\QRCodeController::class, 'generate'])->name('qrcode.generate');

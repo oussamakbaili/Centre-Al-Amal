@@ -43,5 +43,10 @@ class Module extends Model
     {
         return $this->hasMany(Post::class);
     }
+    public function documents()
+    {
+        return $this->hasMany(Cours::class);
+    }
+
 }
 

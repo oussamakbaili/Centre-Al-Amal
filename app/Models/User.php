@@ -13,8 +13,8 @@ class User extends Authenticatable
 
     protected $fillable = [
         'nom',
-        'email', 
-        'password', 
+        'email',
+        'password',
         'role',
     ];
 
@@ -52,7 +52,7 @@ class User extends Authenticatable
     {
         return $this->hasOne(Admin::class);
     }
-    
+
     public function role()
     {
         return $this->belongsTo(Role::class);
@@ -61,4 +61,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Absence::class, 'etudiant_id');
     }
+    public function module()
+    {
+        return $this->belongsTo(Module::class, 'module_id');
+    }
+
 }
