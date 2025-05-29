@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Document;
+
 
 
 class Module extends Model
@@ -21,7 +23,7 @@ class Module extends Model
    }
     public function etudiants()
     {
-        return $this->belongsToMany(Etudiant::class);
+        return $this->belongsToMany(Etudiant::class, 'etudiant_module');
     }
 
     public function absences()
@@ -45,8 +47,13 @@ class Module extends Model
     }
     public function documents()
     {
-        return $this->hasMany(Cours::class);
+        return $this->hasMany(Document::class);
     }
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'module_user');
+    }
+
 
 }
 

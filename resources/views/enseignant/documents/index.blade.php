@@ -80,8 +80,8 @@
                                     <hr class="my-2">
                                 @endif
                             @endforeach
-                        </div>
-
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>

@@ -107,18 +107,23 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('emplois', EmploiDuTempsController::class);
 
     // Notes
-    Route::prefix('notes')->name('notes.')->group(function () {
-        Route::get('/', [NoteController::class, 'index'])->name('index');
-        Route::get('/create', [NoteController::class, 'create'])->name('create');
-        Route::post('/', [NoteController::class, 'store'])->name('store');
-        Route::get('/{note}/edit', [NoteController::class, 'edit'])->name('edit');
-        Route::get('/{etudiant_id}/{module_id}/edit-notes', [NoteController::class, 'editNotes'])->name('editNotes');
-        Route::put('/{id}/update-notes', [NoteController::class, 'updateNotes'])->name('updateNotes');
-        Route::put('/{etudiant_id}/{module_id}', [NoteController::class, 'update'])->name('update');
-        Route::delete('/{note}', [NoteController::class, 'destroy'])->name('destroy');
-        Route::delete('/destroy/{etudiant_id}/{module_id}/{note_type}', [NoteController::class, 'destroyNote'])->name('destroyNote');
-        Route::delete('/destroy-all/{etudiant_id}/{module_id}', [NoteController::class, 'destroyAll'])->name('destroyAll');
-    });
+        Route::get('/notes/statistics', [NoteController::class, 'statistics'])->name('notes.statistics');
+    Route::get('/notes/export', [NoteController::class, 'export'])->name('notes.export');
+
+    Route::get('/notes', [NoteController::class, 'index'])->name('notes.index');
+    Route::get('/notes/create', [NoteController::class, 'create'])->name('notes.create');
+    Route::post('/notes', [NoteController::class, 'store'])->name('notes.store');
+
+    // Update this route to accept two parameters
+    Route::get('/notes/{etudiant_id}/{module_id}', [NoteController::class, 'show'])->name('notes.show');
+    Route::get('/notes/{etudiant_id}/{module_id}/edit', [NoteController::class, 'edit'])->name('notes.edit');
+    Route::put('/notes/{etudiant_id}/{module_id}', [NoteController::class, 'update'])->name('notes.update');
+    Route::delete('/notes/{etudiant_id}/{module_id}/all', [NoteController::class, 'destroyAll'])->name('notes.destroyAll');
+
+    Route::get('/notes/{id}/edit-notes', [NoteController::class, 'editNotes'])->name('notes.editNotes');
+    Route::put('/notes/{id}/update-notes', [NoteController::class, 'updateNotes'])->name('notes.updateNotes');
+    Route::delete('/notes/{id}', [NoteController::class, 'destroy'])->name('notes.destroy');
+
 
     // Préinscriptions
     Route::resource('preinscriptions', PreinscriptionController::class)->except(['create', 'store']);
@@ -138,8 +143,9 @@ Route::middleware(['auth', 'role:etudiant'])->prefix('etudiant')->name('etudiant
     Route::get('absences', [EtudiantAbsenceController::class, 'index'])->name('absences.index');
     Route::get('/emploi', [EtudiantEmploiController::class, 'index'])->name('emploi');
     Route::get('/notes', [EtudiantNoteController::class, 'index'])->name('notes');
-    Route::get('/documents', [EtudiantDocumentController::class, 'index'])->name('documents');
-    Route::get('/profile', [EtudiantProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/documents', [EtudiantDocumentController::class, 'index'])->name('documents.index');
+    Route::get('/documents/{module}', [EtudiantDocumentController::class, 'show'])->name('documents.show');
+         Route::get('/profile', [EtudiantProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [EtudiantProfileController::class, 'update'])->name('profile.update');
     Route::post('/profile/password', [EtudiantProfileController::class, 'updatePassword'])->name('profile.password');
 });

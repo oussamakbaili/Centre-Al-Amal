@@ -64,7 +64,7 @@ class Etudiant extends Authenticatable
 
     public function modules()
 {
-    return $this->belongsToMany(Module::class);
+    return $this->belongsToMany(Module::class, 'etudiant_module');
 }
 
 

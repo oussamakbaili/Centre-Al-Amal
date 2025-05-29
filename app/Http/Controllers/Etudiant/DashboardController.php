@@ -12,13 +12,23 @@ class DashboardController extends Controller
         $user = Auth::user();
         $etudiant = $user->etudiant;
 
-        // Charger les relations nécessaires
+        // Charger les relations de base
         $etudiant->load([
             'groupe.emplois.module',
             'notes.module',
             'absences.module',
-            'documents'
         ]);
+
+        // Vérifier si le groupe existe
+        $documents = collect(); // valeur par défaut
+        if ($etudiant->groupe) {
+            $etudiant->groupe->load('modules.documents');
+
+            $documents = $etudiant->groupe->modules
+                ->flatMap(function ($module) {
+                    return $module->documents;
+                });
+        }
 
         return view('etudiant.dashboard', [
             'title' => 'Tableau de bord étudiant',
@@ -27,7 +37,7 @@ class DashboardController extends Controller
             'emplois' => $etudiant->groupe->emplois ?? collect(),
             'notes' => $etudiant->notes,
             'absences' => $etudiant->absences,
-            'documents' => $etudiant->documents
+            'documents' => $documents,
         ]);
     }
 }

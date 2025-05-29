@@ -160,6 +160,26 @@ class NoteController extends Controller
         return redirect()->route('admin.notes.index', ['module_id' => $module_id])
             ->with('success', 'Note supprimée avec succès.');
     }
+    public function show($etudiant_id, $module_id)
+{
+    $etudiant = Etudiant::findOrFail($etudiant_id);
+    $module = Module::findOrFail($module_id);
+
+    $notes = Note::where('etudiant_id', $etudiant_id)
+                 ->where('module_id', $module_id)
+                 ->get();
+
+    $note1 = $notes->where('note_type', 'note1')->first();
+    $note2 = $notes->where('note_type', 'note2')->first();
+
+    // Calculate average if both notes exist
+    $moyenne = null;
+    if ($note1 && $note2) {
+        $moyenne = ($note1->note + $note2->note) / 2;
+    }
+
+    return view('admin.notes.show', compact('etudiant', 'module', 'note1', 'note2', 'moyenne'));
+}
     public function destroyAll($etudiant_id, $module_id)
     {
         Note::where('etudiant_id', $etudiant_id)

@@ -28,7 +28,7 @@
                 Absences
             </a>
             <li class="mb-4">
-                <a href="{{ route('etudiant.documents') }}" class="block py-2 px-4 hover:bg-blue-700">Documents</a>
+                <a href="{{ route('etudiant.documents.index') }}" class="block py-2 px-4 hover:bg-blue-700">Documents</a>
             </li>
         </ul>
     </div>
@@ -238,7 +238,7 @@
                     <div class="px-6 py-4 bg-blue-600 text-white">
                         <div class="flex items-center justify-between">
                             <h3 class="text-lg font-semibold">Mes Documents</h3>
-                            <a href="{{ route('etudiant.documents') }}" class="text-sm font-medium hover:text-blue-200">Voir tout</a>
+                            <a href="{{ route('etudiant.documents.index') }}" class="text-sm font-medium hover:text-blue-200">Voir tout</a>
                         </div>
                     </div>
                     <div class="p-6">

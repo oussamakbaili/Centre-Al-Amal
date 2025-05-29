@@ -61,9 +61,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(Absence::class, 'etudiant_id');
     }
-    public function module()
+    public function modules()
     {
-        return $this->belongsTo(Module::class, 'module_id');
+        return $this->belongsToMany(Module::class, 'module_user', 'user_id', 'module_id')
+                    ->withTimestamps();
     }
 
 }

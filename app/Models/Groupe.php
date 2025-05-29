@@ -11,10 +11,10 @@ class Groupe extends Model
         return $this->belongsToMany(Etudiant::class, 'etudiant_groupe', 'groupe_id', 'etudiant_id');
     }
 
-    public function modules()
-    {
-        return $this->belongsToMany(Module::class, 'groupe_module', 'groupe_id', 'module_id');
-    }
+public function modules()
+{
+    return $this->hasMany(Module::class);
+}
 
     public function emplois()
     {
