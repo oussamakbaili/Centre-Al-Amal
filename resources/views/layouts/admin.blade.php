@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Espace Étudiant') - Centre Al-Amal</title>
+    <title>@yield('title', 'Administration') - Centre Al-Amal</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -36,25 +36,59 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
-        .grade-card {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .schedule-item {
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            border: none;
             transition: all 0.2s ease;
         }
-        .schedule-item:hover {
-            background: rgba(59, 130, 246, 0.05);
-            transform: translateX(4px);
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+        .btn-secondary {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            border: none;
+            transition: all 0.2s ease;
+        }
+        .btn-secondary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(107, 114, 128, 0.4);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border: none;
+            transition: all 0.2s ease;
+        }
+        .btn-success:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            border: none;
+            transition: all 0.2s ease;
+        }
+        .btn-danger:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+        }
+        .form-input {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(209, 213, 219, 0.5);
+            transition: all 0.2s ease;
+        }
+        .form-input:focus {
+            background: rgba(255, 255, 255, 1);
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
     </style>
     
     @stack('styles')
 </head>
-<body class="bg-gradient-to-br from-blue-50 via-white to-indigo-50 min-h-screen">
+<body class="bg-gradient-to-br from-gray-50 via-white to-gray-100 min-h-screen">
     <!-- Sidebar Component -->
-    <x-etudiant-sidebar />
+    <x-admin-sidebar />
 
     <!-- Main Content -->
     <div class="min-h-screen">
@@ -62,14 +96,14 @@
         <header class="glass-effect border-b border-gray-200/30 px-8 py-6 sticky top-0 z-10">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-900 tracking-tight mb-1">@yield('page-title', 'Espace Étudiant')</h1>
-                    <p class="text-gray-600 text-sm font-medium">@yield('page-description', 'Votre parcours académique au Centre Al-Amal')</p>
+                    <h1 class="text-3xl font-bold text-gray-900 tracking-tight mb-1">@yield('page-title', 'Administration')</h1>
+                    <p class="text-gray-600 text-sm font-medium">@yield('page-description', 'Système de gestion Centre Al-Amal')</p>
                 </div>
                 <div class="flex items-center space-x-4">
                     @yield('header-actions')
-                    <div class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium flex items-center">
-                        <div class="w-2 h-2 bg-blue-400 rounded-full mr-2 animate-pulse"></div>
-                        Connecté
+                    <div class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium flex items-center">
+                        <div class="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
+                        Système opérationnel
                     </div>
                 </div>
             </div>
@@ -112,4 +146,4 @@
     
     @stack('scripts')
 </body>
-</html>
+</html> 

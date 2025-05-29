@@ -37,6 +37,23 @@ class EnseignantController extends Controller
         return view('admin.enseignants.index', compact('enseignants', 'search', 'sort'));
     }
 
+    public function show($id)
+    {
+        $enseignant = Enseignant::with('module')->findOrFail($id);
+        
+        // Get additional data for the show view
+        $totalStudents = 0;
+        $recentClasses = 0;
+        
+        if ($enseignant->module && method_exists($enseignant->module, 'etudiants')) {
+            $totalStudents = $enseignant->module->etudiants()->count();
+        }
+        
+        // You can add more statistics here as needed
+        
+        return view('admin.enseignants.show', compact('enseignant', 'totalStudents', 'recentClasses'));
+    }
+
     public function create()
     {
         $modules = Module::all();
@@ -45,7 +62,7 @@ class EnseignantController extends Controller
 
     public function store(Request $request)
     {
-        // Génération d’un mot de passe aléatoire
+        // Génération d'un mot de passe aléatoire
         $password = Str::random(8);
         $hashedPassword = Hash::make($password);
 
@@ -71,7 +88,7 @@ class EnseignantController extends Controller
             'nom' => $request->nom,
         ]);
 
-        // Création de l’enseignant
+        // Création de l'enseignant
         $enseignant = Enseignant::create([
             'user_id' => $user->id,
             'nom' => $request->nom,
