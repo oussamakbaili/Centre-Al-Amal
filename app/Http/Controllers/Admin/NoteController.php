@@ -189,4 +189,77 @@ class NoteController extends Controller
         return redirect()->route('admin.notes.index')
             ->with('success', 'Toutes les notes ont été supprimées.');
     }
+
+    public function statistics()
+    {
+        $totalNotes = Note::count();
+        $totalEtudiants = Etudiant::count();
+        $totalModules = Module::count();
+        
+        $moyenneGenerale = Note::avg('note') ?? 0;
+        $tauxReussite = $totalNotes > 0 ? (Note::where('note', '>=', 10)->count() / $totalNotes) * 100 : 0;
+        
+        $notesByModule = Module::withCount('notes')
+            ->with(['notes' => function($query) {
+                $query->selectRaw('module_id, AVG(note) as moyenne, COUNT(*) as total')
+                      ->groupBy('module_id');
+            }])->get();
+
+        $topEtudiants = Etudiant::withAvg('notes', 'note')
+            ->orderByDesc('notes_avg_note')
+            ->take(10)
+            ->get();
+
+        return view('admin.notes.statistics', compact(
+            'totalNotes', 
+            'totalEtudiants', 
+            'totalModules', 
+            'moyenneGenerale', 
+            'tauxReussite',
+            'notesByModule',
+            'topEtudiants'
+        ));
+    }
+
+    public function export()
+    {
+        $notes = Note::with(['etudiant', 'module'])->get();
+        
+        $filename = 'notes_export_' . date('Y-m-d_H-i-s') . '.csv';
+        
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+
+        $callback = function() use ($notes) {
+            $file = fopen('php://output', 'w');
+            
+            // CSV headers
+            fputcsv($file, [
+                'ID',
+                'Étudiant',
+                'Module',
+                'Type de Note',
+                'Note',
+                'Date de Création'
+            ]);
+
+            // CSV data
+            foreach ($notes as $note) {
+                fputcsv($file, [
+                    $note->id,
+                    $note->etudiant->nom . ' ' . $note->etudiant->prenom,
+                    $note->module->nom,
+                    $note->note_type ?? 'Non spécifié',
+                    $note->note,
+                    $note->created_at->format('Y-m-d H:i:s')
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
 }

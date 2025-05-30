@@ -12,7 +12,6 @@ return new class extends Migration {
             $table->unsignedBigInteger('etudiant_id')->nullable();
             $table->unsignedBigInteger('enseignant_id')->nullable();
             $table->date('date_absence');
-            $table->string('etat');
             $table->text('motif')->nullable();
             $table->timestamps();
         

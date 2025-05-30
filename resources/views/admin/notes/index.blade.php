@@ -236,12 +236,12 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <div class="flex items-center justify-end space-x-2">
-                                    <a href="{{ route('admin.notes.show', $note->id) }}" 
+                                    <a href="{{ route('admin.notes.show', [$note->etudiant->id, $note->module->id]) }}" 
                                        class="text-indigo-600 hover:text-indigo-900 p-2 rounded-lg hover:bg-indigo-50 transition-colors"
                                        title="Voir détails">
                                         <i class="fas fa-eye"></i>
                                     </a>
-                                    <a href="{{ route('admin.notes.edit', $note->id) }}" 
+                                    <a href="{{ route('admin.notes.edit', [$note->etudiant->id, $note->module->id]) }}" 
                                        class="text-blue-600 hover:text-blue-900 p-2 rounded-lg hover:bg-blue-50 transition-colors"
                                        title="Modifier">
                                         <i class="fas fa-edit"></i>
