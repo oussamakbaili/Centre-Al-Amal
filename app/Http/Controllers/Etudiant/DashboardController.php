@@ -29,6 +29,15 @@ class DashboardController extends Controller
                     return $module->documents;
                 });
         }
+        // Générer le QR Code
+        $qrData = json_encode([
+            'etudiant_id' => $etudiant->id,
+            'user_id' => $user->id,
+            'date' => now()->format('Y-m-d'),
+            'timestamp' => now()->timestamp
+        ]);
+
+        $qrCode = QrCode::size(200)->generate($qrData);
 
         return view('etudiant.dashboard', [
             'title' => 'Tableau de bord étudiant',
@@ -38,6 +47,9 @@ class DashboardController extends Controller
             'notes' => $etudiant->notes,
             'absences' => $etudiant->absences,
             'documents' => $documents,
+            'qrCode' => $qrCode,
+            'qrData' => $qrData
+
         ]);
     }
 }

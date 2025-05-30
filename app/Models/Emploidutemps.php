@@ -11,7 +11,13 @@ class Emploidutemps extends Model
 
     protected $table = 'emploi_du_temps';
 
-    protected $fillable = ['module_id', 'jour', 'heure_debut', 'heure_fin', 'salle', 'enseignant_id'];
+    protected $fillable = ['module_id', 'jour', 'heure_debut', 'heure_fin',
+    'salle', 'enseignant_id', 'status', 'scanned_by',];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function module()
     {
@@ -26,5 +32,9 @@ class Emploidutemps extends Model
     public function etudiant()
     {
         return $this->belongsTo(Etudiant::class);
+    }
+    public function admin()
+    {
+        return $this->belongsTo(User::class, 'scanned_by');
     }
 }

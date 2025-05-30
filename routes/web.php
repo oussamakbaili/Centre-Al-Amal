@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\AbsenceController;
 use App\Http\Controllers\Admin\EmploiDuTempsController;
 use App\Http\Controllers\Admin\NoteController;
 use App\Http\Controllers\Admin\ModuleController;
+use App\Http\Controllers\Admin\ScanController;
 use App\Http\Controllers\Etudiant\DashboardController as EtudiantDashboardController;
 use App\Http\Controllers\Etudiant\AbsenceController as EtudiantAbsenceController;
 use App\Http\Controllers\Etudiant\EmploiController as EtudiantEmploiController;
@@ -31,7 +32,7 @@ use App\Http\Controllers\Enseignant1\NoteController as EnseignantNoteController;
 use App\Http\Controllers\Enseignant1\ProfileController as EnseignantProfileController;
 use App\Http\Controllers\Enseignant1\EmploiDuTempsController as EnseignantEmploiController;
 use App\Http\Controllers\Enseignant1\DocumentController as EnseignantDocumentController;
-use App\Http\Controllers\QRCodeController;
+use App\Http\Controllers\QRScanController;
 
 
 /*
@@ -130,6 +131,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/preinscriptions', [PreinscriptionController::class, 'store'])->name('preinscriptions.store');
     Route::post('preinscriptions/{id}/accept', [PreinscriptionController::class, 'accept'])->name('preinscriptions.accept');
     Route::delete('preinscriptions/{id}/reject', [PreinscriptionController::class, 'reject'])->name('preinscriptions.reject');
+
+    //Scanner
+    Route::get('/scanner', [ScanController::class, 'showScanner'])->name('admin.scanner');
+    Route::post('/scanner/process', [ScanController::class, 'processScan'])->name('admin.scan.process');
 });
 
 
@@ -143,12 +148,23 @@ Route::middleware(['auth', 'role:etudiant'])->prefix('etudiant')->name('etudiant
     Route::get('absences', [EtudiantAbsenceController::class, 'index'])->name('absences.index');
     Route::get('/emploi', [EtudiantEmploiController::class, 'index'])->name('emploi');
     Route::get('/notes', [EtudiantNoteController::class, 'index'])->name('notes');
-    Route::get('/documents', [EtudiantDocumentController::class, 'index'])->name('documents.index');
-    Route::get('/documents/{module}', [EtudiantDocumentController::class, 'show'])->name('documents.show');
-         Route::get('/profile', [EtudiantProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('documents', [EtudiantDocumentController::class, 'index'])->name('documents.index');
+    Route::get('documents/{module}', [EtudiantDocumentController::class, 'show'])->name('documents.show');
+    Route::get('documents/module/{module}/document/{document}/download', [EtudiantDocumentController::class, 'download'])->name('documents.download');
+    Route::get('/profile', [EtudiantProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [EtudiantProfileController::class, 'update'])->name('profile.update');
     Route::post('/profile/password', [EtudiantProfileController::class, 'updatePassword'])->name('profile.password');
 });
+
+// Routes pour le QR Code
+Route::get('/qr-scanner', function() {
+    return view('qr-scanner');
+})->name('qr.scanner');
+
+Route::post('/qr-scan', [QRScanController::class, 'scan'])->name('qr.scan');
+Route::get('/mark-absents', [QRScanController::class, 'markAbsents'])->name('mark.absents');
+
+
 /*
 |--------------------------------------------------------------------------
 | Enseignant
@@ -202,6 +218,3 @@ Route::middleware(['auth', 'role:enseignant'])->prefix('enseignant')->name('ense
 
 });
 
-// Routes pour le QR Code
-Route::post('/scan-qrcode', [App\Http\Controllers\QRCodeController::class, 'scan'])->name('qrcode.scan');
-Route::get('/generate-qrcode/{id}/{type}', [App\Http\Controllers\QRCodeController::class, 'generate'])->name('qrcode.generate');

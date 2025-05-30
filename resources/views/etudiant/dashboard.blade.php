@@ -262,14 +262,24 @@
                     </div>
                 </div>
             </div>
-            <!-- QR Code Section -->
-<div class="bg-white p-6 rounded-lg shadow-md mt-6">
-    <h2 class="text-xl font-semibold mb-4">Mon QR Code d'absence</h2>
-    <div class="flex flex-col items-center">
-        <div class="mb-4">
-            {!! QrCode::size(200)->generate(route('qrcode.generate', ['id' => $etudiant->id, 'type' => 'etudiant'])) !!}
+            <!-- Après la section "Deux cartes du bas" -->
+<div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="px-6 py-4 bg-blue-600 text-white">
+            <h3 class="text-lg font-semibold">Mon QR Code de Présence</h3>
         </div>
-        <p class="text-sm text-gray-600">Présentez ce QR Code pour enregistrer votre présence</p>
+        <div class="p-6 text-center">
+            <div class="flex justify-center mb-4">
+                {!! $qrCode !!}
+            </div>
+            <p class="text-gray-600 mb-2">
+                Présentez ce QR Code à votre admin pour enregistrer votre présence
+            </p>
+            <p class="text-sm text-gray-500">
+                Valable pour aujourd'hui seulement - {{ now()->format('d/m/Y') }}
+            </p>
+            <input type="hidden" id="qrData" value="{{ $qrData }}">
+        </div>
     </div>
 </div>
         </div>

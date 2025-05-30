@@ -1,99 +1,243 @@
-<div class="p-6">
-    <!-- En-tête simplifié sans groupe -->
-    <div class="mb-6">
-        <h1 class="text-2xl font-bold text-gray-800">{{ $module->nom }}</h1>
-        @if($module->description)
-            <p class="text-gray-600 mt-2">{{ $module->description }}</p>
-        @endif
-    </div>
 
-    <!-- Section Documents -->
-    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-semibold flex items-center">
-                <i class="fas fa-folder-open text-blue-500 mr-2"></i>
-                Documents du module
-            </h2>
-            <span class="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-                {{ $module->documents->count() }} document(s)
-            </span>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 bg-light sidebar">
+            <div class="sidebar-sticky">
+                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                </h6>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('etudiant.documents.index') }}">
+                            <i class="fas fa-home"></i> Accueil
+                        </a>
+                    </li>
+
+                </ul>
+
+                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                </h6>
+                <ul class="nav flex-column">
+                    @foreach($modules as $mod)
+                    <li class="nav-item">
+                        <a class="nav-link {{ $mod->id == $module->id ? 'active' : '' }}"
+                           href="{{ route('etudiant.documents.show', $mod) }}">
+                            <div class="d-flex align-items-center">
+                                <span class="module-icon rounded-circle d-inline-flex align-items-center justify-content-center me-2"
+                                      style="width: 24px; height: 24px; background-color: {{ $mod->couleur ?? '#007bff' }}; color: white; font-size: 12px;">
+                                    {{ strtoupper(substr($mod->nom, 0, 1)) }}
+                                </span>
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold text-truncate" style="font-size: 14px;">{{ $mod->nom }}</div>
+                                    <div class="text-muted small">{{ $mod->enseignant->nom ?? 'Enseignant' }}</div>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                    @endforeach
+                </ul>
+            </div>
         </div>
 
-        @if($module->documents->count() > 0)
-            <div class="space-y-3">
-                @foreach($module->documents as $document)
-                <div class="border rounded-lg p-4 hover:bg-gray-50 transition-colors duration-200">
-                    <div class="flex justify-between items-start">
-                        <div class="flex items-start flex-1 min-w-0">
-                            <div class="bg-blue-100 p-3 rounded-lg mr-4 flex-shrink-0">
-                                <i class="fas fa-file-alt text-blue-600"></i>
-                            </div>
-                            <div class="min-w-0">
-                                <h3 class="font-medium text-lg truncate">{{ $document->titre }}</h3>
-                                <div class="flex flex-wrap items-center text-sm text-gray-500 mt-1">
-                                    @if($document->auteur)
-                                        <span class="flex items-center mr-3">
-                                            <i class="far fa-user mr-1"></i>
-                                            <span class="truncate">{{ $document->auteur }}</span>
-                                        </span>
-                                    @endif
-                                    <span class="flex items-center">
-                                        <i class="far fa-clock mr-1"></i>
-                                        {{ $document->created_at->format('d/m/Y') }}
-                                    </span>
+        <!-- Main content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <!-- Header du module -->
+            <div class="module-header p-4 mb-4 rounded"
+                 style="background: linear-gradient(135deg, {{ $module->couleur ?? '#007bff' }}, {{ $module->couleur ?? '#0056b3' }}); color: white;">
+                <div class="d-flex align-items-center">
+
+                    <div class="flex-grow-1">
+                        <h1 class="mb-1">{{ $module->nom }}</h1>
+                        </div>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light" type="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation tabs -->
+            <ul class="nav nav-tabs mb-4" id="moduleTab" role="tablist">
+
+            </ul>
+
+            <!-- Tab content -->
+            <div class="tab-content" id="moduleTabContent">
+                <!-- Stream Tab -->
+                <div class="tab-pane fade show active" id="stream" role="tabpanel">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <!-- Zone d'annonce -->
+                            <div class="card mb-4">
+                                <div class="card-body">
+
                                 </div>
-                                @if($document->description)
-                                    <p class="text-gray-600 mt-2 text-sm">
-                                        {{ Str::limit($document->description, 150) }}
-                                    </p>
-                                @endif
+                            </div>
+
+                            <!-- Liste des documents/activités récentes -->
+                            @if($recentActivities && $recentActivities->count() > 0)
+                                @foreach($recentActivities as $activity)
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-start">
+                                            <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center me-3"
+                                                 style="width: 40px; height: 40px;">
+                                                <i class="fas fa-file-alt text-white"></i>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <div class="d-flex justify-content-between align-items-start">
+                                                    <div>
+                                                        <h6 class="mb-1">{{ $activity->auteur }} a publié un nouveau document: {{ $activity->titre }}</h6>
+                                                        <small class="text-muted">{{ $activity->created_at->format('d M') }}</small>
+                                                    </div>
+                                                    <div class="dropdown">
+                                                        <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="dropdown">
+                                                            <i class="fas fa-ellipsis-v"></i>
+                                                        </button>
+                                                        <ul class="dropdown-menu">
+                                                            <li><a class="dropdown-item" href="#"><i class="fas fa-download me-2"></i>Télécharger</a></li>
+                                                            <li><a class="dropdown-item" href="#"><i class="fas fa-eye me-2"></i>Ouvrir</a></li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @endforeach
+                            @else
+                                <div class="text-center py-5">
+                                    <i class="fas fa-stream fa-3x text-muted mb-3"></i>
+                                </div>
+                            @endif
+                        </div>
+
+                        <div class="col-md-4">
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Classwork Tab -->
+                <div class="tab-pane fade" id="classwork" role="tabpanel">
+                    <div class="row">
+                        @if($module->documents && $module->documents->count() > 0)
+                            @foreach($module->documents as $document)
+                            <div class="col-md-6 col-lg-4 mb-4">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-start mb-3">
+
+
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <a href="{{ $document->lien_fichier }}" class="btn btn-sm btn-outline-primary"
+                                                   target="_blank">
+                                                    <i class="fas fa-download"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
+                        @else
+                            <div class="col-12 text-center py-5">
+                                <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+                                <h3 class="text-muted">Aucun document</h3>
+                                <p class="text-muted">Les documents du cours apparaîtront ici.</p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+
+                <!-- People Tab -->
+                <div class="tab-pane fade" id="people" role="tabpanel">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center">
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <a href="{{ asset('storage/documents/' . $document->fichier) }}"
-                           class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center ml-4 flex-shrink-0"
-                           download
-                           title="Télécharger le document">
-                            <i class="fas fa-download mr-2"></i> Télécharger
-                        </a>
+                        <div class="col-md-6">
+                            <div class="card">
+
+                            </div>
+                        </div>
                     </div>
                 </div>
-                @endforeach
             </div>
-        @else
-            <div class="text-center py-8 bg-gray-50 rounded-lg">
-                <i class="far fa-folder-open text-4xl text-gray-300 mb-3"></i>
-                <p class="text-gray-500">Aucun document disponible pour ce module</p>
-                <p class="text-sm text-gray-400 mt-1">Les documents apparaîtront ici une fois ajoutés</p>
-            </div>
-        @endif
-    </div>
-
-    <!-- Activités récentes -->
-    <div class="bg-white rounded-lg shadow-md p-6">
-        <h2 class="text-xl font-semibold mb-4 flex items-center">
-            <i class="fas fa-bell text-yellow-500 mr-2"></i>
-            Activités récentes
-        </h2>
-
-        @if(count($recentActivities) > 0)
-            <div class="space-y-3">
-                @foreach($recentActivities as $activity)
-                <div class="flex items-start p-3 hover:bg-gray-50 rounded-lg transition-colors duration-200">
-                    <div class="bg-gray-100 p-2 rounded-full mr-4 flex-shrink-0">
-                        <i class="fas fa-{{ $activity->type === 'document' ? 'file-alt text-blue-500' : 'comment text-green-500' }}"></i>
-                    </div>
-                    <div class="min-w-0">
-                        <p class="font-medium truncate">{{ $activity->titre }}</p>
-                        <p class="text-sm text-gray-500 mt-1">
-                            <span class="mr-2">{{ $activity->auteur }}</span>
-                            <span>• {{ $activity->created_at->diffForHumans() }}</span>
-                        </p>
-                    </div>
-                </div>
-                @endforeach
-            </div>
-        @else
-            <p class="text-gray-500 text-center py-4">Aucune activité récente</p>
-        @endif
+        </main>
     </div>
 </div>
+
+<style>
+.sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    padding: 48px 0 0;
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+}
+
+.sidebar-sticky {
+    position: relative;
+    top: 0;
+    height: calc(100vh - 48px);
+    padding-top: .5rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.nav-link {
+    color: #333;
+    padding: 0.75rem 1rem;
+}
+
+.nav-link:hover {
+    color: #007bff;
+    background-color: rgba(0,123,255,.1);
+}
+
+.nav-link.active {
+    color: #007bff;
+    background-color: rgba(0,123,255,.1);
+    border-right: 3px solid #007bff;
+}
+
+.module-header {
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+main {
+    margin-left: 16.66667%;
+}
+
+@media (max-width: 767.98px) {
+    .sidebar {
+        position: static;
+    }
+    main {
+        margin-left: 0;
+    }
+}
+
+.card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: box-shadow 0.2s;
+}
+
+.card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+</style>
+
