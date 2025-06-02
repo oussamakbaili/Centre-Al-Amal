@@ -18,7 +18,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Navigation -->
     <nav class="p-6 space-y-6 flex-1 overflow-y-auto">
         @if($userRole === 'admin')
@@ -45,7 +45,7 @@
                             <span class="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full font-medium">{{ \App\Models\Etudiant::count() }}</span>
                         </div>
                     </a>
-                    
+
                     <a href="{{ route('admin.enseignants.index') }}" class="nav-item group flex items-center px-4 py-3.5 text-gray-700 rounded-xl {{ request()->routeIs('admin.enseignants.*') ? 'bg-blue-50 text-blue-600 shadow-sm' : 'hover:bg-white/60 hover:text-blue-600' }} transition-all duration-300 ease-out">
                         <div class="w-5 h-5 mr-4 flex items-center justify-center">
                             <i class="fas fa-chalkboard-teacher text-sm {{ request()->routeIs('admin.enseignants.*') ? 'text-blue-500' : 'text-gray-400 group-hover:text-blue-500' }} transition-colors"></i>
@@ -55,7 +55,7 @@
                             <span class="bg-emerald-100 text-emerald-600 text-xs px-2 py-1 rounded-full font-medium">{{ \App\Models\Enseignant::count() }}</span>
                         </div>
                     </a>
-                    
+
                     <a href="{{ route('admin.modules.index') }}" class="nav-item group flex items-center px-4 py-3.5 text-gray-700 rounded-xl {{ request()->routeIs('admin.modules.*') ? 'bg-blue-50 text-blue-600 shadow-sm' : 'hover:bg-white/60 hover:text-blue-600' }} transition-all duration-300 ease-out">
                         <div class="w-5 h-5 mr-4 flex items-center justify-center">
                             <i class="fas fa-book text-sm {{ request()->routeIs('admin.modules.*') ? 'text-blue-500' : 'text-gray-400 group-hover:text-blue-500' }} transition-colors"></i>
@@ -84,14 +84,21 @@
                             </div>
                         @endif
                     </a>
-                    
+
+                     <a href="{{ route('admin.presences.index') }}" class="nav-item group flex items-center px-4 py-3.5 text-gray-700 rounded-xl {{ request()->routeIs('admin.notes.*') ? 'bg-blue-50 text-blue-600 shadow-sm' : 'hover:bg-white/60 hover:text-blue-600' }} transition-all duration-300 ease-out">
+                        <div class="w-5 h-5 mr-4 flex items-center justify-center">
+                            <i class="fas fa-clipboard-list text-sm {{ request()->routeIs('admin.presences.*') ? 'text-blue-500' : 'text-gray-400 group-hover:text-blue-500' }} transition-colors"></i>
+                        </div>
+                        <span class="font-medium text-sm">présences</span>
+                    </a>
+
                     <a href="{{ route('admin.notes.index') }}" class="nav-item group flex items-center px-4 py-3.5 text-gray-700 rounded-xl {{ request()->routeIs('admin.notes.*') ? 'bg-blue-50 text-blue-600 shadow-sm' : 'hover:bg-white/60 hover:text-blue-600' }} transition-all duration-300 ease-out">
                         <div class="w-5 h-5 mr-4 flex items-center justify-center">
                             <i class="fas fa-clipboard-list text-sm {{ request()->routeIs('admin.notes.*') ? 'text-blue-500' : 'text-gray-400 group-hover:text-blue-500' }} transition-colors"></i>
                         </div>
                         <span class="font-medium text-sm">Notes</span>
                     </a>
-                    
+
                     <a href="{{ route('admin.emplois.index') }}" class="nav-item group flex items-center px-4 py-3.5 text-gray-700 rounded-xl {{ request()->routeIs('admin.emplois.*') ? 'bg-blue-50 text-blue-600 shadow-sm' : 'hover:bg-white/60 hover:text-blue-600' }} transition-all duration-300 ease-out">
                         <div class="w-5 h-5 mr-4 flex items-center justify-center">
                             <i class="fas fa-calendar-alt text-sm {{ request()->routeIs('admin.emplois.*') ? 'text-blue-500' : 'text-gray-400 group-hover:text-blue-500' }} transition-colors"></i>
@@ -110,7 +117,7 @@
                             <i class="fas fa-user-plus text-sm {{ request()->routeIs('admin.preinscriptions.*') ? 'text-blue-500' : 'text-gray-400 group-hover:text-blue-500' }} transition-colors"></i>
                         </div>
                         <span class="font-medium text-sm">Préinscriptions</span>
-                        @php 
+                        @php
                             try {
                                 $pendingPreinscriptions = \App\Models\Preinscription::where('status', 'pending')->count();
                             } catch (\Exception $e) {
@@ -139,7 +146,7 @@
                 <p class="text-xs text-gray-500 capitalize">{{ $userRole }}</p>
             </div>
         </div>
-        
+
         @if($userRole === 'admin')
             <a href="{{ route('admin.profile.edit') }}" class="nav-item group flex items-center px-4 py-3 text-gray-700 rounded-xl hover:bg-white/60 hover:text-blue-600 transition-all duration-300 ease-out">
                 <div class="w-5 h-5 mr-3 flex items-center justify-center">
@@ -148,7 +155,7 @@
                 <span class="font-medium text-sm">Modifier le profil</span>
             </a>
         @endif
-        
+
         <form action="{{ route('logout') }}" method="POST">
             @csrf
             <button type="submit" class="nav-item group flex items-center px-4 py-3 text-gray-700 rounded-xl hover:bg-white/60 hover:text-red-600 transition-all duration-300 ease-out w-full text-left">
@@ -162,15 +169,15 @@
 </div>
 
 <style>
-    .sidebar-gradient { 
+    .sidebar-gradient {
         background: linear-gradient(180deg, #fafafa 0%, #f5f5f5 100%);
         backdrop-filter: blur(10px);
     }
-    .nav-item:hover { 
-        transform: translateX(2px); 
+    .nav-item:hover {
+        transform: translateX(2px);
     }
     .nav-item.active {
         background: rgba(59, 130, 246, 0.1);
         color: rgb(59, 130, 246);
     }
-</style> 
+</style>

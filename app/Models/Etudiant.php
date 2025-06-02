@@ -66,6 +66,10 @@ class Etudiant extends Authenticatable
 {
     return $this->belongsToMany(Module::class, 'etudiant_module');
 }
+public function presences() {
+    return $this->hasMany(Presence::class);
+}
+
 
 
     public function groupe()

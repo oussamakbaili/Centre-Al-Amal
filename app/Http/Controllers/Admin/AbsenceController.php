@@ -7,6 +7,7 @@ use App\Models\Absence;
 use App\Models\Enseignant;
 use App\Models\Etudiant;
 use App\Models\Module;
+use App\Models\Presence;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -16,6 +17,8 @@ class AbsenceController extends Controller
     // Afficher la liste des absences
     public function index(Request $request)
     {
+    $absences = Presence::where('etat', 'absent')->with('etudiant', 'seance')->get();
+
         $type = $request->get('type');
 
         if ($type === 'Enseignant') {

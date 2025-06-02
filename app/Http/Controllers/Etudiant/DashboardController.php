@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Etudiant;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class DashboardController extends Controller
 {

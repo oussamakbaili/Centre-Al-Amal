@@ -47,43 +47,64 @@ class EtudiantController extends Controller
 
     // Enregistrer un nouvel étudiant
     public function store(Request $request)
-    {
-        $request->validate([
-            'nom' => 'required|string|max:255',
-            'email' => 'required|email|unique:etudiants|unique:users',
-        ]);
-        
-        Etudiant::create($request->all());
-        return redirect()->route('admin.etudiants.index')->with('success', 'Étudiant créé avec succès.');
-
-        // Générer un mot de passe aléatoire
+{
+    // Génération d'un mot de passe aléatoire
         $password = Str::random(8);
         $hashedPassword = Hash::make($password);
 
-        // Créer l'utilisateur associé
-        $user = new User([
-            'name' => $request->nom,
+    // Validation des données
+    $request->validate([
+        'nom' => 'required|string|max:255',
+        'prenom' => 'required|string|max:255',
+        'email' => 'required|email|unique:etudiants,email|unique:users,email',
+        'adresse' => 'required|string|max:255',
+        'telephone' => 'required|string|max:20',
+        'date_naissance' => 'required|date',
+        'cin' => 'required|string|max:10|unique:etudiants,cin',
+        'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        'niveau' => 'required|string|in:Bac,Licence,Master,Doctorat',
+    ]);
+
+    // Gestion de l'image
+    $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('images', 'public');
+        }
+        $user = User::create([
+            'nom' => $request->nom . ' ' . $request->prenom,
             'email' => $request->email,
             'password' => $hashedPassword,
             'role' => 'etudiant',
         ]);
 
-        // Créer l'étudiant
-        $etudiant = Etudiant::create([
-            'user_id' => $user->id,
-            'nom' => $request->nom,
-            'email' => $request->email,
-            'password' => $hashedPassword,
-        ]);
+    // Création de l'étudiant
+    $etudiant = Etudiant::create([
+        'user_id' => $user->id,
+        'nom' => $validatedData['nom'],
+        'prenom' => $validatedData['prenom'],
+        'email' => $validatedData['email'],
+        'adresse' => $validatedData['adresse'],
+        'telephone' => $validatedData['telephone'],
+        'date_naissance' => $validatedData['date_naissance'],
+        'cin' => $validatedData['cin'],
+        'niveau' => $validatedData['niveau'],
+        'image' => $validatedData['image'] ?? null,
+    ]);
 
-        // Associer l'utilisateur à l'étudiant
-        $etudiant->user()->save($user);
+    // Création de l'utilisateur associé
+    $user = User::create([
+        'name' => $validatedData['nom'] . ' ' . $validatedData['prenom'],
+        'email' => $validatedData['email'],
+        'password' => Hash::make($password),
+        'role' => 'etudiant',
+    ]);
 
-        // Envoyer l'email avec le mot de passe
-        Mail::to($etudiant->email)->send(new EtudiantRegistered($etudiant, $password));
 
-        return redirect()->route('admin.etudiants.index')->with('success', 'Étudiant créé avec succès.');
-    }
+
+    Mail::to($etudiant->email)->send(new EtudiantRegistered($etudiant, $password));
+
+    return redirect()->route('admin.etudiants.index')->with('success', 'Étudiant ajouté avec succès.');
+}
 
     // Afficher les détails d'un étudiant
     public function show(Etudiant $etudiant)
@@ -125,7 +146,7 @@ class EtudiantController extends Controller
     public function destroy($id)
     {
         $etudiant = Etudiant::findOrFail($id);
-        
+
         // Supprimer l'utilisateur lié avant l'étudiant
         if ($etudiant->user) {
             $etudiant->user->delete();
@@ -174,4 +195,4 @@ class EtudiantController extends Controller
         $absence->delete();
         return redirect()->back()->with('success', 'Absence supprimée avec succès.');
     }
-}   
+}

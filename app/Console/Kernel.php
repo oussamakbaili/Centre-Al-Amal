@@ -10,9 +10,14 @@ class Kernel extends ConsoleKernel
     /**
      * Define the application's command schedule.
      */
-    protected function schedule(Schedule $schedule): void
+    protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->call(function () {
+            app(\App\Http\Controllers\Admin\PresenceController::class)->ajouterAbsentsAutomatiquement();
+        })->everyMinute(); // ou ->hourly();
+
+        // Run every 5 minutes to check for ended sessions and fill absences
+        $schedule->command('absences:fill')->everyFiveMinutes();
     }
 
     /**
@@ -24,4 +29,5 @@ class Kernel extends ConsoleKernel
 
         require base_path('routes/console.php');
     }
+
 }

@@ -14,8 +14,9 @@ class Absence extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['etudiant_id', 'module_id', 'enseignant_id', 'etat', 'motif',         'date_absence',
-        'scanned_at', 'heure_cours'];
+    protected $fillable = ['etudiant_id', 'module_id', 'enseignant_id', 'admin_id', 'etat', 'motif', 'date_absence',
+        'scanned_at', 'heure_cours', 'scanned_by_admin'
+];
 
     protected $casts = [
         'scanned_at' => 'datetime',
@@ -29,7 +30,13 @@ class Absence extends Model
         'updated_at'
     ];
 
-    public function etudiant()
+
+    public function admin()
+{
+    return $this->belongsTo(User::class, 'admin_id');
+}
+
+public function etudiant()
     {
         return $this->belongsTo(Etudiant::class, 'etudiant_id');
     }
@@ -41,9 +48,8 @@ class Absence extends Model
 
     public function module()
     {
-        return $this->hasOneThrough(Module::class, Emploidutemps, 'id', 'id', 'emploi_id', 'module_id');
+        return $this->belongsTo(Module::class, 'module_id');
     }
-
     public function emploi()
     {
         return $this->belongsTo(Emploi::class);

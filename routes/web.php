@@ -33,6 +33,7 @@ use App\Http\Controllers\Enseignant1\ProfileController as EnseignantProfileContr
 use App\Http\Controllers\Enseignant1\EmploiDuTempsController as EnseignantEmploiController;
 use App\Http\Controllers\Enseignant1\DocumentController as EnseignantDocumentController;
 use App\Http\Controllers\QRScanController;
+use App\Http\Controllers\PresenceController;
 
 
 /*
@@ -135,6 +136,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     //Scanner
     Route::get('/scanner', [ScanController::class, 'showScanner'])->name('admin.scanner');
     Route::post('/scanner/process', [ScanController::class, 'processScan'])->name('admin.scan.process');
+
+    //presence
+
+    Route::get('/presences/index', [PresenceController::class, 'index'])->name('presences.index');
+    Route::get('/presences/scan/{type}/{id}', [ScanController::class, 'start'])->name('presences.scan');
+    Route::post('/scanner/presence/store', [ScanController::class, 'store'])->name('scanner.presence.store');
 });
 
 
@@ -217,4 +224,6 @@ Route::middleware(['auth', 'role:enseignant'])->prefix('enseignant')->name('ense
     Route::resource('classes', ClasseController::class);
 
 });
+Route::get('/presence/scan', [PresenceController::class, 'scan'])->name('presence.scan');
+
 
